@@ -10,6 +10,7 @@ contract GLXFactory is IGLXFactory, Ownable {
 
 
     function createGame(address extToken, bool isOnChainGame) external returns (address game) {
+        //创建游戏合约
         bytes memory bytecode = type(GLXGame).creationCode;
         bytes32 salt = keccak256(abi.encodePacked(token0));
 
@@ -18,16 +19,18 @@ contract GLXFactory is IGLXFactory, Ownable {
         }
         IGLXGame(game).initialize(router);
 
-        if (IGLXRouter(router).extToken2IntToken[token] == address(0)) {
+        if (IGLXRouter(router).getIntToken[extToken] == address(0)) {
+            //创建外部代币对应的内部代币合约
             bytes memory bytecode = type(GLXToken).creationCode;
-            bytes32 salt = keccak256(abi.encodePacked(token0));
+            bytes32 salt = keccak256(abi.encodePacked(extToken));
 
             assembly {
                 intToken := create2(0, add(bytecode, 32), mload(bytecode), salt)
             }
 
             GLXToken(intToken).setRouter(router);
-            IGLXRouter(router).addExtToken2IntToken(extToken, intToken);
+            IGLXRouter(router).addIntToken(extToken, intToken);
+            IGLXRouter(router).addGameExtToken(game, extToken);
         }
     }
 
