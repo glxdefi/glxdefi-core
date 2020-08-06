@@ -13,7 +13,7 @@ contract GLXGame is IGLXGame, Lifecycle{
     address public factory;
     address public router;
 
-    bool public isOnlineGame;
+    bool public isOnChainGame;
     bool public gameResult;
 
     uint256 public trueTotalAmount;
@@ -36,7 +36,7 @@ contract GLXGame is IGLXGame, Lifecycle{
     }
 
     // called once by the factory at time of deployment
-    function initialize(address _router) external {
+    function initialize(address _router, address _token) external {
         require(msg.sender == factory, 'GLXGame: FORBIDDEN'); // sufficient check
         router = _router;
     }

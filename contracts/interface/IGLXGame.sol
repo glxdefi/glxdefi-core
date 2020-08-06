@@ -1,6 +1,6 @@
 pragma solidity ^0.6.0;
 
-contract IGLXGame {
+interface IGLXGame {
 
     event Transfer(address indexed from, address indexed to, uint256 value);
 
