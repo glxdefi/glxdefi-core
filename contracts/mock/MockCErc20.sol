@@ -1,11 +1,16 @@
 pragma solidity ^0.6.0;
 
+import "@openzeppelin/contracts/math/SafeMath.sol";
 import "@openzeppelin/contracts/access/Ownable.sol";
 import "@openzeppelin/contracts/token/ERC20/IERC20.sol";
 
 contract MockCErc20 is Ownable {
 
+    using SafeMath for uint256;
+
     mapping (address => uint256) public balanceOf;
+
+    uint256 public ratio = 3 * 1e17;
 
     address public erc20Address;
 
@@ -42,8 +47,9 @@ contract MockCErc20 is Ownable {
     }
 
     function redeemInternal(uint redeemAmount) internal returns (uint){
+        uint256 redeemTotal = redeemAmount.add(redeemAmount.mul(ratio).div(1e18));
         IERC20 underlying = IERC20(erc20Address);
-        underlying.transfer(msg.sender, redeemAmount);
+        underlying.transfer(msg.sender, redeemTotal);
         balanceOf[msg.sender] -= redeemAmount;
         return uint(0);
     }
