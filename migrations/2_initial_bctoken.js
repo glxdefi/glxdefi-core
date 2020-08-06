@@ -1,5 +1,5 @@
-const BCToken = artifacts.require("BCToken");
+const GLXToken = artifacts.require("GLXToken");
 
 module.exports = function (deployer) {
-  deployer.deploy(BCToken, 10000);
+  deployer.deploy(GLXToken, 10000);
 };
