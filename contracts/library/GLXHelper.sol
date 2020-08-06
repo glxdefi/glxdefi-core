@@ -4,9 +4,9 @@ import "@openzeppelin/contracts/math/SafeMath.sol";
 
 library GLXHelper {
 
-    using safeMath for unit256;
+    using SafeMath for uint256;
 
-    function calReceiveAmount(unit256 amount, unit256 totalAmount, unit256 value) internal  returns (unit256) {
+    function calReceiveAmount(uint256 amount, uint256 totalAmount, uint256 value) internal  returns (uint256) {
 
         return amount.mul(amount, value).div(totalAmount);
     }

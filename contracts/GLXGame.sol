@@ -1,14 +1,14 @@
 pragma solidity ^0.6.0;
 
-import "@openzeppelin/contracts/contracts/math/SafeMath.sol";
+import "@openzeppelin/contracts/math/SafeMath.sol";
 
 import "./interface/IGLXGame.sol";
 import "./library/GLXHelper.sol";
-import "./abstract/Lifecycle.sol";
+import "./Lifecycle.sol";
 
 contract GLXGame is IGLXGame, Lifecycle{
 
-    using safeMath for unit256;
+    using SafeMath for uint256;
 
     address public factory;
     address public router;
@@ -81,16 +81,16 @@ contract GLXGame is IGLXGame, Lifecycle{
         if (gameResult) {
             require(trueAmountMap[account] != 0, "GLXGame: NOT_EXIST");
 
-            unit64 receiveAmount = GameHelper.calReceiveAmount(trueAmountMap[account], trueTotalAmount, falseTotalAmount);
-            GameHelper.safeTransfer(account, receiveAmount);
+            uint64 receiveAmount = GLXHelper.calReceiveAmount(trueAmountMap[account], trueTotalAmount, falseTotalAmount);
+            GLXHelper.safeTransfer(account, receiveAmount);
 
             receivedMap[account] = true;
 
         } else {
             require(falseAmountMap[account] != 0, "GLXGame: NOT_EXIST");
 
-            unit64 receiveAmount = GLXHelper.calReceiveAmount(falseAmountMap[account], falseTotalAmount, trueTotalAmount);
-            GameHelper.safeTransfer(account, receiveAmount);
+            uint64 receiveAmount = GLXHelper.calReceiveAmount(falseAmountMap[account], falseTotalAmount, trueTotalAmount);
+            GLXHelper.safeTransfer(account, receiveAmount);
 
             receivedMap[account] = true;
         }
