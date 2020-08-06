@@ -1,5 +1,4 @@
 
-
 const MockErc20 = artifacts.require("MockErc20");
 const MockCErc20 = artifacts.require("MockCErc20");
 const FinCompound = artifacts.require("FinCompound");
