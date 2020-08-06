@@ -2,9 +2,8 @@ pragma solidity ^0.6.0;
 
 import "@openzeppelin/contracts/access/Ownable.sol";
 
-import "./IFin.sol";
-import "./IErc20.sol";
-import "./ICErc20.sol";
+import "./interface/IErc20.sol";
+import "./interface/ICErc20.sol";
 
 contract FinCompound is Ownable {
 
