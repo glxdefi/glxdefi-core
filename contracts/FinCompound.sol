@@ -55,7 +55,7 @@ contract FinCompound is Ownable {
 
         // `amount` is scaled up by 1e18 to avoid decimals
 
-        uint256 redeemResult = cToken.redeemUnderlying(amount);
+        uint256 redeemResult = cToken.redeem(amount);
 
         // Error codes are listed here:
         // https://compound.finance/developers/ctokens#ctoken-error-codes

@@ -16,11 +16,15 @@ contract MockCErc20 is Ownable {
 
     function mint(uint256 _amount) external returns (uint256) {
         require(_amount > 0);
+        return mintInternal(_amount);
+    }
 
+    function mintInternal(uint256 mintAmount) internal returns (uint256) {
         IERC20 underlying = IERC20(erc20Address);
-        underlying.transferFrom(msg.sender, address(this), _amount);
-        balanceOf[msg.sender] += _amount;
-        return _amount;
+        underlying.transferFrom(msg.sender, address(this), mintAmount);
+        balanceOf[msg.sender] += mintAmount;
+
+        return uint256(0);
     }
 
     function exchangeRateCurrent() external pure returns (uint256){
@@ -31,18 +35,20 @@ contract MockCErc20 is Ownable {
         return uint256(0);
     }
 
-    function redeem(uint _amount) external pure returns (uint){
-        return _amount;
+    function redeem(uint _amount) external returns (uint){
+        require(_amount > 0);
+        require(balanceOf[msg.sender] >= _amount);
+        return redeemInternal(_amount);
+    }
+
+    function redeemInternal(uint redeemAmount) internal returns (uint){
+        IERC20 underlying = IERC20(erc20Address);
+        underlying.transfer(msg.sender, redeemAmount);
+        balanceOf[msg.sender] -= redeemAmount;
+        return uint(0);
     }
 
     function redeemUnderlying(uint _amount) external returns (uint){
-        require(_amount > 0);
-        require(balanceOf[msg.sender] >= _amount);
-
-        IERC20 underlying = IERC20(erc20Address);
-        underlying.transfer(msg.sender, _amount);
-        balanceOf[msg.sender] -= _amount;
-        return _amount;
+        return uint(0);
     }
-
 }
