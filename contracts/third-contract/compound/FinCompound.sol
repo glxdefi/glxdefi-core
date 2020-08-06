@@ -1,9 +1,9 @@
 pragma solidity ^0.6.0;
 
 import "@openzeppelin/contracts/access/Ownable.sol";
+import "@openzeppelin/contracts/token/ERC20/IERC20.sol";
 
-import "./interface/IErc20.sol";
-import "./interface/ICErc20.sol";
+import "./ICErc20.sol";
 
 contract FinCompound is Ownable {
 
@@ -25,7 +25,7 @@ contract FinCompound is Ownable {
         require(_numTokensToSupply > 0);
         // Create a reference to the underlying asset contract, like DAI.
 
-        IErc20 underlying = IErc20(erc20Address);
+        IERC20 underlying = IERC20(erc20Address);
 
         // Create a reference to the corresponding cToken contract, like cDAI
         ICErc20 cToken = ICErc20(cerc20Address);
