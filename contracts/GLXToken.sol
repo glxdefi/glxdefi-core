@@ -19,11 +19,11 @@ contract GLXToken is Ownable, ERC20 {
         maker = _maker;
     }
 
-    function makeCoin(address receiver, uint amount) public onlyMaker {
+    function mint(address receiver, uint amount) public onlyMaker {
         _mint(receiver, amount);
     }
 
-    function burnCoin(address account, uint amount) public onlyMaker {
+    function burn(address account, uint amount) public onlyMaker {
         _burn(account, amount);
     }
 }
