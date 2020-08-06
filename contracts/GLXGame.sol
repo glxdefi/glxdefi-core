@@ -4,7 +4,7 @@ import "@openzeppelin/contracts/math/SafeMath.sol";
 
 import "./interface/IGLXGame.sol";
 import "./library/GLXHelper.sol";
-import "./Lifecycle.sol";
+import "./library/Lifecycle.sol";
 
 contract GLXGame is IGLXGame, Lifecycle{
 
