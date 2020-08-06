@@ -1,5 +1,9 @@
-const BCToken = artifacts.require("BCToken");
+const MockErc20 = artifacts.require("MockErc20");
+const MockCErc20 = artifacts.require("MockCErc20");
+const FinCompound = artifacts.require("FinCompound");
 
-module.exports = function (deployer) {
-  deployer.deploy(BCToken, 10000);
+module.exports = async function (deployer) {
+  await deployer.deploy(MockErc20, 100);
+  await deployer.deploy(MockCErc20);
+  await deployer.deploy(FinCompound);
 };
