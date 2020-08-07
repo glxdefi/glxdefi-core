@@ -3,9 +3,10 @@ pragma solidity ^0.6.0;
 import "@openzeppelin/contracts/math/SafeMath.sol";
 
 import "./interface/IGLXGame.sol";
+import "./interface/IGLXFactory.sol";
 import "./abstract/GLXLifecycle.sol";
 import "./library/GLXHelper.sol";
-import "./library/FinCompound.sol";
+import "./library/CompoundHelper.sol";
 
 
 
@@ -15,6 +16,8 @@ contract GLXGame is IGLXGame, GLXLifecycle, Ownable{
 
     address public factory;
     address public router;
+    address public finToken;
+
 
     //对赌标的是否是链上数据：true代表是 链上数据，false代表是 链下数据
     bool public isOnChainGame;
@@ -51,6 +54,7 @@ contract GLXGame is IGLXGame, GLXLifecycle, Ownable{
     address public maxAmountAccount;
     address public interestIncome;
 
+    uint8 private unlocked = 0;
     constructor() public {
         factory = msg.sender;
     }
@@ -108,7 +112,7 @@ contract GLXGame is IGLXGame, GLXLifecycle, Ownable{
             return false;
         }
 
-        if(!isOnChainGame && !isOffChainOracled) {
+        if(!isGameResultOpen) {
             return false;
         }
 
@@ -131,7 +135,7 @@ contract GLXGame is IGLXGame, GLXLifecycle, Ownable{
             return true;
         }
 
-        if (_account == maxAmountAccount) {
+        if (msg.sender == maxAmountAccount) {
             return true;
         }
 
@@ -163,8 +167,8 @@ contract GLXGame is IGLXGame, GLXLifecycle, Ownable{
             }
         }
 
-        address extToken = IGLXFactory(factory).getGameExtToken[game];
-        FinCompound.supply(extToken,  finToken, amount);
+        address extToken = IGLXFactory(factory).getGameExtToken[address(this)];
+        CompoundHelper.supply(extToken,  finToken, amount);
 
         return true;
     }
@@ -180,23 +184,24 @@ contract GLXGame is IGLXGame, GLXLifecycle, Ownable{
         //押注链下数据 需要oracle结果
         require(isGameResultOpen, "GLXGame: 还没有开奖");
 
-        uint64 receiveAmount = 0;
+        uint256 receiveAmount = 0;
 
         //计算
         if (gameResult) {
             require(trueAmountMap[_account] != 0, "GLXGame: NOT_EXIST");
 
-            uint64 receiveAmount = GLXHelper.calReceiveAmount(trueAmountMap[_account], trueTotalAmount, falseTotalAmount);
+            receiveAmount = GLXHelper.calReceiveAmount(trueAmountMap[_account], trueTotalAmount, falseTotalAmount);
         } else {
             require(falseAmountMap[_account] != 0, "GLXGame: NOT_EXIST");
 
-            uint64 receiveAmount = GLXHelper.calReceiveAmount(falseAmountMap[_account], falseTotalAmount, trueTotalAmount);
+            receiveAmount = GLXHelper.calReceiveAmount(falseAmountMap[_account], falseTotalAmount, trueTotalAmount);
         }
 
         if (_account == maxAmountAccount) {
             //如果是押注本金最大的，可以独享 全额利息收益
             receiveAmount = receiveAmount.add(interestIncome);
         }
+
         if(receiveAmount > 0) {
             GLXHelper.safeTransfer(_account, receiveAmount);
 
@@ -221,7 +226,8 @@ contract GLXGame is IGLXGame, GLXLifecycle, Ownable{
             gameResult = false;
         }
 
-        uint256 totalAmount = FinCompound.redeem(extToken,  finToken);
+        address extToken = IGLXFactory(factory).getGameExtToken[address(this)];
+        uint256 totalAmount = CompoundHelper.redeem(extToken,  finToken);
         uint256 initAmount = trueTotalAmount.add(falseTotalAmount);
 
         require(totalAmount < initAmount, "GLXGame: FIN_INCOME_INVALID");

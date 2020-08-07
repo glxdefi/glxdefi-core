@@ -1,12 +1,8 @@
 
-const MockErc20 = artifacts.require("MockErc20");
-const MockCErc20 = artifacts.require("MockCErc20");
-const FinCompound = artifacts.require("FinCompound");
-const GLXToken = artifacts.require("GLXToken");
+const GLXFactory = artifacts.require("GLXFactory");
+const GLXRouter = artifacts.require("GLXRouter");
 
 module.exports = async function (deployer) {
-  await deployer.deploy(MockErc20, 100);
-  await deployer.deploy(MockCErc20);
-  await deployer.deploy(FinCompound);
-  await deployer.deploy(GLXToken);
+  await deployer.deploy(GLXFactory);
+  await deployer.deploy(GLXRouter, GLXFactory.address);
 };

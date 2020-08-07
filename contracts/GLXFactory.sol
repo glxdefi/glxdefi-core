@@ -2,6 +2,7 @@ pragma solidity ^0.6.0;
 
 import "./interface/IGLXFactory.sol";
 import "./GLXGame.sol";
+import "./GLXToken.sol";
 
 contract GLXFactory is IGLXFactory, Ownable {
 
@@ -35,7 +36,7 @@ contract GLXFactory is IGLXFactory, Ownable {
         //创建游戏合约
         bytes memory bytecode = type(GLXGame).creationCode;
         bytes32 salt = keccak256(abi.encodePacked(extToken));
-
+        address game;
         assembly {
             game := create2(0, add(bytecode, 32), mload(bytecode), salt)
         }
@@ -50,6 +51,7 @@ contract GLXFactory is IGLXFactory, Ownable {
             bytes memory bytecode = type(GLXToken).creationCode;
             bytes32 salt = keccak256(abi.encodePacked(extToken));
 
+            address intToken;
             assembly {
                 intToken := create2(0, add(bytecode, 32), mload(bytecode), salt)
             }

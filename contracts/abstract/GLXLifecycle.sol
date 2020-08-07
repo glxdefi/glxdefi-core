@@ -17,7 +17,7 @@ abstract contract GLXLifecycle is Context {
         require(_startBlockNumber > block.number, "GLXLifecycle: BLOCK_NUMBER_INVALID");
 
         startBlockNumber = _startBlockNumber;
-        endBLockNumber = _endBlockNumber;
+        endBlockNumber = _endBlockNumber;
     }
 
     function isStarted() public view returns (bool) {
@@ -29,7 +29,7 @@ abstract contract GLXLifecycle is Context {
 
 
     function isEnded() public view returns (bool) {
-        if(block.number > endBLockNumber) {
+        if(block.number > endBlockNumber) {
             return true;
         }
         return false;

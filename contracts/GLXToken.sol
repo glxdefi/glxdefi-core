@@ -47,6 +47,6 @@ contract GLXToken is Ownable, ERC20 {
 
     function calSwapAmount(address account, uint amount) internal returns (uint) {
         IERC20 dai = IERC20(daiAddress);
-        return dai.balanceOf(msg.sender).mul(amount).div(_totalSupply);
+        return dai.balanceOf(msg.sender).mul(amount).div(totalSupply());
     }
 }
