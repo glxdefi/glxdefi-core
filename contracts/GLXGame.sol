@@ -3,8 +3,11 @@ pragma solidity ^0.6.0;
 import "@openzeppelin/contracts/math/SafeMath.sol";
 
 import "./interface/IGLXGame.sol";
-import "./library/GLXHelper.sol";
 import "./abstract/GLXLifecycle.sol";
+import "./library/GLXHelper.sol";
+import "./library/FinCompound.sol";
+
+
 
 contract GLXGame is IGLXGame, GLXLifecycle, Ownable{
 
@@ -136,7 +139,7 @@ contract GLXGame is IGLXGame, GLXLifecycle, Ownable{
     }
 
 
-    function bet(address account, bool direction, uint256 amount) external lock whenNotStarted onlyRouter returns (bool) {
+    function bet(address extToken, address account, bool direction, uint256 amount) external lock whenNotStarted onlyRouter returns (bool) {
         require(account != address(0), "GLXGame: BET_ADDRESS_ZERO");
         require(amount > 0, "GLXGame: BET_AMOUNT_ZERO");
 
@@ -160,6 +163,8 @@ contract GLXGame is IGLXGame, GLXLifecycle, Ownable{
             }
         }
 
+        address extToken = IGLXFactory(factory).getGameExtToken[game];
+        FinCompound.supply(extToken,  finToken, amount);
 
         return true;
     }
@@ -215,6 +220,14 @@ contract GLXGame is IGLXGame, GLXLifecycle, Ownable{
         } else {
             gameResult = false;
         }
+
+        uint256 totalAmount = FinCompound.redeem(extToken,  finToken);
+        uint256 initAmount = trueTotalAmount.add(falseTotalAmount);
+
+        require(totalAmount < initAmount, "GLXGame: FIN_INCOME_INVALID");
+
+        interestIncome = totalAmount.sub(initAmount);
+
 
         isGameResultOpen = true;
         return true;

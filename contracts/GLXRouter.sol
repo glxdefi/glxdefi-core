@@ -38,7 +38,7 @@ contract GLXRouter is IGLXRouter,Ownable {
 
         GLXHelper.safeTransferFrom(extToken, msg.sender, game, amount);
 
-        require(IGLXGame(game).bet(msg.sender, direction, amount), 'GLXRouter: GAME_BET_FAILED');
+        require(IGLXGame(game).bet(extToken, msg.sender, direction, amount), 'GLXRouter: GAME_BET_FAILED');
 
         return true;
     }
@@ -53,7 +53,6 @@ contract GLXRouter is IGLXRouter,Ownable {
 
     //当对赌的标的 是链上数据，需要触发开奖
     function updateGameResult(address game) external olnyOwner validGame(game) returns (bool) {
-
         require(IGLXGame(game).updateGameResult(), 'GLXRouter: GAME_UPDATE_RESULT_FAILED');
 
         return true;
