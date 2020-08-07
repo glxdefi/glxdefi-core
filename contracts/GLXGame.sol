@@ -282,4 +282,9 @@ contract GLXGame is IGLXGame, GLXLifecycle{
         return true;
     }
 
+    //获取利率
+    function getApr() external whenEnded returns (uint256) {
+        return CompoundHelper.exchangeRate(finToken);
+    }
+
 }

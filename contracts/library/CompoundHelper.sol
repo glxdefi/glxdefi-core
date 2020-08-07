@@ -42,4 +42,10 @@ library CompoundHelper {
 
         return underlying.balanceOf(address(this));
     }
+
+    //获取利率
+    function exchangeRate(address ctoken) public returns (uint256) {
+        ICErc20 cToken = ICErc20(ctoken);
+        return cToken.exchangeRateCurrent();
+    }
 }
