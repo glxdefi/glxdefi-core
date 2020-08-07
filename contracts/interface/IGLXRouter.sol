@@ -4,8 +4,17 @@ interface IGLXRouter {
 
 
     // 押注
-    function bet(address account, bool direction, uint256 amount) external returns (bool);
+    function bet(address game, address extToken, bool direction, uint256 amount) external returns (bool);
 
-    // 开奖
-    function receive(address account) external returns (bool);
+    // 用户领奖领奖：减少平台发奖成本开销
+    function receive(address game) external returns (bool);
+
+    // 游戏开始，报名截止
+    function startGame(address game) external returns (bool);
+
+    // 游戏截止，可以领奖了
+    function endGame(address game) external returns (bool);
+
+    //当对赌的标的 是链下数据，需要oracle喂结果
+    function gameResultOracle(address game, bool direction) external returns (bool);
 }
