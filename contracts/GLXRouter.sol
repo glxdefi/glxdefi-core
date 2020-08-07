@@ -8,7 +8,7 @@ import "./interface/IGLXGame.sol";
 
 import "./library/GLXHelper.sol";
 
-contract GLXRouter is IGLXRouter,Ownable {
+contract GLXRouter is Ownable {
 
     address public factory;
 

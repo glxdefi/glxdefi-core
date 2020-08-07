@@ -32,11 +32,11 @@ contract MockCErc20 is Ownable {
         return uint256(0);
     }
 
-    function exchangeRateCurrent() external pure returns (uint256){
+    function exchangeRateCurrent() external view returns (uint256){
         return ratio;
     }
 
-    function supplyRatePerBlock() external pure returns (uint256){
+    function supplyRatePerBlock() external view returns (uint256){
         return uint(0);
     }
 

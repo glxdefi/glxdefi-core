@@ -7,7 +7,7 @@ library GLXHelper {
     using SafeMath for uint256;
 
     function calReceiveAmount(uint256 amount, uint256 totalAmount, uint256 value) internal  returns (uint256) {
-        uint256 winAmount = amount.mul(amount, value).div(totalAmount);
+        uint256 winAmount = amount.mul(value).div(totalAmount);
         //除了赢的钱，还需要归还本金
         return winAmount.add(amount);
     }

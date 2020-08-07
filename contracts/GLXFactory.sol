@@ -4,7 +4,7 @@ import "./interface/IGLXFactory.sol";
 import "./GLXGame.sol";
 import "./GLXToken.sol";
 
-contract GLXFactory is IGLXFactory, Ownable {
+contract GLXFactory is Ownable {
 
 
     address public feeTo;

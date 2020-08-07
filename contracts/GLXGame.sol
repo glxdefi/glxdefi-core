@@ -10,7 +10,7 @@ import "./library/CompoundHelper.sol";
 
 
 
-contract GLXGame is IGLXGame, GLXLifecycle{
+contract GLXGame is GLXLifecycle{
 
     using SafeMath for uint256;
 
@@ -51,10 +51,10 @@ contract GLXGame is IGLXGame, GLXLifecycle{
     //领奖状态：false表示未领取，true表示已经领取
     mapping (address => bool) public isReceivedMap;
 
-    address public maxAmount;
+    uint256 public maxAmount;
     address public maxAmountAccount;
     //利息总收入
-    address public interestIncome;
+    uint256 public interestIncome;
 
     uint8 private unlocked = 0;
     constructor() public {
@@ -151,11 +151,11 @@ contract GLXGame is IGLXGame, GLXLifecycle{
             return false;
         }
 
-        if ((trueAmountMap[msg.sender] != address(0)) && gameResult) {
+        if ((trueAmountMap[msg.sender] > 0) && gameResult) {
                 return true;
         }
 
-        if ((falseAmountMap[msg.sender] != address(0)) && !gameResult) {
+        if ((falseAmountMap[msg.sender] > 0) && !gameResult) {
             return true;
         }
 
@@ -226,7 +226,7 @@ contract GLXGame is IGLXGame, GLXLifecycle{
         }
 
         if(receiveAmount > 0) {
-            GLXHelper.safeTransfer(_account, receiveAmount);
+            GLXHelper.safeTransfer(extToken, _account, receiveAmount);
 
             isReceivedMap[_account] = true;
         }
@@ -243,7 +243,7 @@ contract GLXGame is IGLXGame, GLXLifecycle{
         require(isOnChainGame, "GLXGame: NOT_ON_CHAIN_GAME");
         require(!isGameResultOpen, "GLXGame: ALREADY_ORACLED");
 
-        if (IERC20(gameObjectToken).totalSupply >= gameObjectTokenSupply) {
+        if (IERC20(gameObjectToken).totalSupply() >= gameObjectTokenSupply) {
             gameResult = true;
         } else {
             gameResult = false;
