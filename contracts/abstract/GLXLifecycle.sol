@@ -12,7 +12,7 @@ import "@openzeppelin/contracts/GSN/Context.sol";
 
 
     function _initBlockNumber(uint _startBlockNumber, uint _endBlockNumber)  internal  {
-        require(startBlockNumber != 0 || endBlockNumber != 0, "GLXLifecycle: BLOCK_NUMBER_ALREADY_INIT");
+        require(startBlockNumber == 0 && endBlockNumber == 0, "GLXLifecycle: BLOCK_NUMBER_ALREADY_INIT");
         require(_startBlockNumber < _endBlockNumber, "GLXLifecycle: BLOCK_NUMBER_INVALID");
         require(_startBlockNumber > block.number, "GLXLifecycle: BLOCK_NUMBER_INVALID");
 

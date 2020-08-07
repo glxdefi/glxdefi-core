@@ -41,9 +41,11 @@ contract GLXFactory is Ownable {
             getLiquidPool[intToken] = liquidPool;
         }
 
+        emit Game(game);
         return game;
     }
 
+    event Game(address a);
 
     function _createGame(
         address router,
