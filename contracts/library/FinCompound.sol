@@ -4,6 +4,7 @@ import "@openzeppelin/contracts/access/Ownable.sol";
 import "@openzeppelin/contracts/token/ERC20/IERC20.sol";
 
 import "./ICErc20.sol";
+import "../third-contract/compound/ICErc20.sol";
 
 //compound 提交、赎回工具
 library FinCompound {

@@ -46,8 +46,15 @@ contract GLXGame is IGLXGame, Lifecycle{
         _;
     }
 
+    //防止重入攻击
+    modifier lock() {
+        require(unlocked == 1, 'GLXGame: LOCKED');
+        unlocked = 0;
+        _;
+        unlocked = 1;
+    }
 
-    function bet(address account, bool direction, uint256 amount) public whenNotStarted onlyRouter returns (bool) {
+    function bet(address account, bool direction, uint256 amount) external lock whenNotStarted onlyRouter returns (bool) {
         require(account != address(0), "GLXGame: BET_ADDRESS_ZERO");
         require(amount > 0, "GLXGame: BET_AMOUNT_ZERO");
 
@@ -68,10 +75,12 @@ contract GLXGame is IGLXGame, Lifecycle{
                 maxAmountAccount = account;
             }
         }
+
+
         return true;
     }
 
-    function receive(address account) public whenEnded returns (bool) {
+    function receive(address account) external lock whenEnded returns (bool) {
         require(account != address(0), "GLXGame: RECEIVE_ADDRESS_ZERO");
         require(!receivedMap[account], "GLXGame: RECEIVED");
 

@@ -10,8 +10,8 @@ interface IGLXGame {
     function initialize(address _router, address _token) external;
 
     // 押注
-    function bet(address account, bool direction, uint256 amount) public returns (bool);
+    function bet(address account, bool direction, uint256 amount) external returns (bool);
 
     // 开奖
-    function receive(address account) public returns (bool);
+    function receive(address account) external returns (bool);
 }

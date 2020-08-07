@@ -10,7 +10,6 @@ contract GLXRouter is IGLXRouter,Ownable {
     address public factory;
 
 
-
     constructor(address _factory) public {
         require(_factory != address(0), 'GLXRouter: ADDRESS_NULL');
         factory = _factory;
