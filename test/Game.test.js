@@ -43,6 +43,10 @@ contract('Game', function (accounts) {
         expect(gameExtToken).equal(this.dai.address);
 
         this.game = await GLXGame.at(gameAddress)
+
+        expect(await this.game.factory.call()).equal(this.gLXFactory.address)
+    })
+    it('should startGame', async function() {
     })
 
 })
