@@ -11,14 +11,14 @@ abstract contract GLXLifecycle is Context {
     uint private endBlockNumber;
 
 
-    constructor (uint _startBlockNumber, uint _endBlockNumber ) internal {
+    function _initBlockNumber(uint _startBlockNumber, uint _endBlockNumber)  internal  {
+        require(startBlockNumber != 0 || endBlockNumber != 0, "GLXLifecycle: BLOCK_NUMBER_ALREADY_INIT");
         require(_startBlockNumber < _endBlockNumber, "GLXLifecycle: BLOCK_NUMBER_INVALID");
         require(_startBlockNumber > block.number, "GLXLifecycle: BLOCK_NUMBER_INVALID");
 
         startBlockNumber = _startBlockNumber;
         endBLockNumber = _endBlockNumber;
     }
-
 
     function isStarted() public view returns (bool) {
         if(block.number >= startBlockNumber) {

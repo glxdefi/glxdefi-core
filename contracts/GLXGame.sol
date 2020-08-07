@@ -41,20 +41,22 @@ contract GLXGame is IGLXGame, GLXLifecycle, Ownable{
     address public maxAmountAccount;
     address public interestIncome;
 
-    constructor(uint _startBlockNumber, uint _endBlockNumber) GLXLifecycle(_startBlockNumber, _endBlockNumber) public {
+    constructor() public {
         factory = msg.sender;
-        isOnlineGame = true;
     }
 
-    // called once by the factory at time of deployment
-    function initialize(address _router, address _token) external {
-        require(msg.sender == factory, 'GLXGame: FORBIDDEN'); // sufficient check
+    // 当被factory创建后就会调用一次init
+    function initialize(
+        address _router,
+        bool _isOnChainGame,
+        uint _startBlockNumber,
+        uint _endBlockNumber
+    )  external onlyFactory {
+
         router = _router;
-    }
+        isOnChainGame = _isOnChainGame;
 
-    modifier onlyRouter() {
-        require(msg.sender == router, 'GLXGame: FORBIDDEN'); // sufficient check
-        _;
+        _initBlockNumber(_startBlockNumber, _endBlockNumber);
     }
 
     //防止重入攻击
@@ -64,6 +66,37 @@ contract GLXGame is IGLXGame, GLXLifecycle, Ownable{
         _;
         unlocked = 1;
     }
+
+    modifier onlyRouter() {
+        require(msg.sender == router, 'GLXGame: FORBIDDEN'); // sufficient check
+        _;
+    }
+
+    modifier onlyFactory() {
+        require(msg.sender == factory, 'GLXGame: FORBIDDEN'); // sufficient check
+        _;
+    }
+
+    //是否可以领取奖品了
+    modifier whenCanReceive() {
+        require(!isCanReceive(), 'GLXGame: NOT_CAN_RECEIVE');
+        _;
+    }
+
+
+
+    function isCanReceive() public view returns (bool) {
+        if (!isEnded()) {
+            return false;
+        }
+
+        if(!isOnChainGame && !isOffChainOracled) {
+            return false;
+        }
+
+        return true;
+    }
+
 
     function bet(address account, bool direction, uint256 amount) external lock whenNotStarted onlyRouter returns (bool) {
         require(account != address(0), "GLXGame: BET_ADDRESS_ZERO");
@@ -91,7 +124,7 @@ contract GLXGame is IGLXGame, GLXLifecycle, Ownable{
         return true;
     }
 
-    function receive(address _account) external lock whenEnded returns (bool) {
+    function receive(address _account) external lock whenCanReceive returns (bool) {
         require(_account != address(0), "GLXGame: RECEIVE_ADDRESS_ZERO");
         require(!isReceivedMap[_account], "GLXGame: RECEIVED");
 

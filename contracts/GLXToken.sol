@@ -15,6 +15,11 @@ contract GLXToken is Ownable, ERC20 {
     constructor() public ERC20("GLXToken", "GLX") {
     }
 
+    // 当被factory创建后就会调用一次init
+    function initialize( address _newOwner)  external onlyOwner {
+        transferOwnership(_newOwner);
+    }
+
     function setRouter(address _router) public onlyOwner {
         router = _router;
     }
@@ -23,7 +28,7 @@ contract GLXToken is Ownable, ERC20 {
         _mint(receiver, amount);
     }
 
-    function burn(address account, uint amount) public onlyRouter {
-        _burn(account, amount);
+    function burn(uint amount) public onlyRouter {
+        _burn(msg.sender, amount);
     }
 }

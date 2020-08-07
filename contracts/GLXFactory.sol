@@ -5,6 +5,7 @@ import "./GLXGame.sol";
 
 contract GLXFactory is IGLXFactory, Ownable {
 
+
     address public feeTo;
     address public router;
 
@@ -13,7 +14,19 @@ contract GLXFactory is IGLXFactory, Ownable {
     //GLXGame => USDT
     mapping(address => address) public getGameExtToken;
 
-    function createGame(address token, uint startBlockNumber, uint endBLockNumber, bool isOnChainGame) external returns (address game) {
+
+    constructor() public {
+        feeTo = msg.sender;
+    }
+
+
+    //创建游戏合约，当游戏合于对应的代币没有创建是，还会自动创建代币
+    function createGame(
+        address token,
+        uint startBlockNumber,
+        uint endBLockNumber,
+        bool isOnChainGame
+    ) external returns (address game) {
         //创建游戏合约
         bytes memory bytecode = type(GLXGame).creationCode;
         bytes32 salt = keccak256(abi.encodePacked(token0));
@@ -21,8 +34,11 @@ contract GLXFactory is IGLXFactory, Ownable {
         assembly {
             game := create2(0, add(bytecode, 32), mload(bytecode), salt)
         }
-        IGLXGame(game).initialize(router);
+        //初始化游戏合约参数
+        IGLXGame(game).initialize(router, isOnChainGame, startBlockNumber, endBLockNumber);
         getGameExtToken[game] = extToken;
+
+
 
         if (getIntToken[extToken] == address(0)) {
             //创建外部代币对应的内部代币合约
@@ -33,7 +49,10 @@ contract GLXFactory is IGLXFactory, Ownable {
                 intToken := create2(0, add(bytecode, 32), mload(bytecode), salt)
             }
 
+            //之所以没有把router放到initialize中是为了加入router有变更，需要重新set，而initialize通常只能调用一次
             GLXToken(intToken).setRouter(router);
+            //将部署合约地址设置为token的owner；之所以放到后面，是因为setRouter需要factory作为owner才能操作
+            GLXToken(intToken).initialize(msg.sender);
             getIntToken[extToken] = intToken;
         }
     }
