@@ -17,7 +17,7 @@ module.exports = {
       gas: 100000000,
     },
     ropsten: {
-      provider: () => new HDWalletProvider(process.env.DEV_MNEMONIC, "https://ropsten.infura.io/v3/" + infuraProjectId),
+      provider: () => new HDWalletProvider(process.env.DEV_MNEMONIC, "http://parity.test.finance.sparkpool.com:18545"),
       network_id: 3,       // Ropsten's id
     },
     goerli: {

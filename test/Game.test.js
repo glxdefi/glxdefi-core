@@ -9,7 +9,9 @@ const { TestHelper } = require('@openzeppelin/cli');
 var MockErc20 = artifacts.require("MockErc20");
 var GLXToken = artifacts.require("GLXToken");
 var GLXFactory = artifacts.require("GLXFactory");
+var GLXRouter = artifacts.require("GLXRouter");
 var MockCErc20 = artifacts.require("MockCErc20");
+var GLXGame = artifacts.require("GLXGame");
 
 const { expect } = require('chai');
 
@@ -22,12 +24,25 @@ contract('Game', function (accounts) {
         this.dai = await MockErc20.deployed()
         this.hope = await GLXToken.deployed()
         this.cdai = await MockCErc20.deployed()
+        this.router = await GLXRouter.deployed()
         this.gLXFactory = await GLXFactory.deployed()
+        // console.log('factory: ' + this.gLXFactory.address)
+        // console.log('router: ' + this.router.address)
+        // console.log('cdai: ' + this.cdai.address)
+        // console.log('hope: ' + this.hope.address)
+        // console.log('dai: ' + this.dai.address)
     })
 
     it('should createGame', async function () {
-        const a = await this.gLXFactory.createGame(this.dai.address, this.hope.address, this.cdai.address, 10000, 10100, true, this.dai.address, 1000)
-        console.log(a)
+
+        const result = await this.gLXFactory.createGame(this.router.address, this.dai.address, this.hope.address,
+            this.cdai.address, this.cdai.address, 10000, 10100, true, this.dai.address, 1000)
+        const gameAddress = result.receipt.logs[0].args.a
+
+        const gameExtToken = await this.gLXFactory.getGameExtToken.call(gameAddress)
+        expect(gameExtToken).equal(this.dai.address);
+
+        this.game = await GLXGame.at(gameAddress)
     })
 
 })
