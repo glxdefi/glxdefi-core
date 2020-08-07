@@ -4,7 +4,7 @@ import "@openzeppelin/contracts/math/SafeMath.sol";
 
 import "./interface/IGLXGame.sol";
 import "./library/GLXHelper.sol";
-import "./library/Lifecycle.sol";
+import "./abstract/Lifecycle.sol";
 
 contract GLXGame is IGLXGame, Lifecycle{
 
@@ -24,9 +24,9 @@ contract GLXGame is IGLXGame, Lifecycle{
     //反方总押注额度
     uint256 public falseTotalAmount;
     //正方总参与人数
-    uint256 public trueTotalCount;
+    uint public trueTotalCount;
     //反方总参与人数
-    uint256 public falseTotalCount;
+    uint public falseTotalCount;
 
     //正方押注额度
     mapping (address => uint256) public trueAmountMap;
