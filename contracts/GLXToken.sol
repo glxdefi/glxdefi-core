@@ -28,11 +28,8 @@ contract GLXToken is Ownable, ERC20 {
         _mint(receiver, amount);
     }
 
-    function burn(uint amount) public onlyRouter {
-        _burn(msg.sender, amount);
-    }
 
-    function swap(uint amount) public {
+    function burn(uint amount) public {
         require(amount > 0, "GLXToken: AMOUNT_IS_ZERO");
 
         uint swapAmount = calSwapAmount(amount);

@@ -17,6 +17,7 @@ contract GLXGame is GLXLifecycle{
     address public factory;
     address public router;
     address public extToken;
+    address public intToken;
     address public finToken;
 
 
@@ -53,8 +54,14 @@ contract GLXGame is GLXLifecycle{
 
     uint256 public maxAmount;
     address public maxAmountAccount;
+
     //利息总收入
     uint256 public interestIncome;
+    //股东收益
+    uint256 public shareHolderProfit;
+    //赢方收益：falseTotalAmount - shareHolderProfit 或者 trueTotalAmount - shareHolderProfit
+    uint256 public winPrincipalProfit;
+
 
     uint8 private unlocked = 0;
     constructor() public {
@@ -65,6 +72,7 @@ contract GLXGame is GLXLifecycle{
     function initialize(
         address _router,
         address _extToken,
+        address _intToken,
         address _finToken,
 
         uint _startBlockNumber,
@@ -76,6 +84,7 @@ contract GLXGame is GLXLifecycle{
 
         router = _router;
         extToken = _extToken;
+        intToken = _intToken;
         finToken = _finToken;
 
         _initBlockNumber(_startBlockNumber, _endBlockNumber);
@@ -216,11 +225,11 @@ contract GLXGame is GLXLifecycle{
         if (gameResult) {
             require(trueAmountMap[_account] != 0, "GLXGame: NOT_EXIST");
 
-            receiveAmount = GLXHelper.calReceiveAmount(trueAmountMap[_account], trueTotalAmount, falseTotalAmount);
+            receiveAmount = GLXHelper.calReceiveAmount(trueAmountMap[_account], trueTotalAmount, winPrincipalProfit);
         } else {
             require(falseAmountMap[_account] != 0, "GLXGame: NOT_EXIST");
 
-            receiveAmount = GLXHelper.calReceiveAmount(falseAmountMap[_account], falseTotalAmount, trueTotalAmount);
+            receiveAmount = GLXHelper.calReceiveAmount(falseAmountMap[_account], falseTotalAmount, winPrincipalProfit);
         }
 
         if (_account == maxAmountAccount) {
@@ -234,10 +243,21 @@ contract GLXGame is GLXLifecycle{
             isReceivedMap[_account] = true;
         }
 
-
         return true;
     }
 
+    //将平台抽成赚到全部收益 分给持有平台币的股东
+    function _transferProfit2ShareHolder() private {
+        if (gameResult) {
+            shareHolderProfit = falseTotalAmount.mul(uint256(3)).div(uint256(100));
+            //一次性算出来之后，在提取收益的时候就不用重复去算了
+            winPrincipalProfit = falseTotalAmount.sub(shareHolderProfit);
+        } else {
+            shareHolderProfit = trueTotalAmount.mul(uint256(3)).div(uint256(100));
+            winPrincipalProfit = trueTotalAmount.sub(shareHolderProfit);
+        }
+        GLXHelper.safeTransfer(extToken, intToken, shareHolderProfit);
+    }
 
     //当对赌的标的 是链上数据，需要触发开奖,谁都可以来开奖
     function updateGameResult() external lock whenEnded returns (bool) {
@@ -260,9 +280,14 @@ contract GLXGame is GLXLifecycle{
         interestIncome = totalAmount.sub(initAmount);
 
 
+        //将平台抽成赚到全部收益 分给持有平台币的股东，股东可将平台代币burn掉的时候，就会收到股东权益
+        _transferProfit2ShareHolder();
+
         isGameResultOpen = true;
+
         return true;
     }
+
 
 
     //当对赌的标的 是链下数据，需要oracle喂结果;防止缺省值影响，2代表true正方赢， 1代表false 反方赢，

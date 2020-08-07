@@ -6,8 +6,6 @@ import "./GLXToken.sol";
 
 contract GLXFactory is Ownable {
 
-    address public feeTo;
-
     //GLXGame => DAI
     mapping(address => address) public getGameExtToken;
     //DAI  => gDAI
@@ -56,6 +54,7 @@ contract GLXFactory is Ownable {
     function _createGame(
         address router,
         address extToken,
+        address intToken,
         address finToken,
         uint startBlockNumber,
         uint endBLockNumber,
@@ -72,7 +71,7 @@ contract GLXFactory is Ownable {
         }
 
         //初始化游戏合约参数
-        IGLXGame(game).initialize(router, extToken, finToken, startBlockNumber, endBLockNumber, isOnChainGame, gameObjectToken, gameObjectTokenSupply);
+        IGLXGame(game).initialize(router, extToken, intToken, finToken, startBlockNumber, endBLockNumber, isOnChainGame, gameObjectToken, gameObjectTokenSupply);
 
         return game;
     }
