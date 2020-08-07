@@ -15,12 +15,8 @@ contract GLXToken is Ownable, ERC20 {
         _;
     }
 
-    constructor() public ERC20("GLXTokenOfHope", "HOPE") {
-    }
-
-    // 当被factory创建后就会调用一次init
-    function initialize( address _newOwner, address _extToken)  external onlyOwner {
-        transferOwnership(_newOwner);
+    constructor(address _router, address _extToken) public ERC20("GLXTokenOfHope", "HOPE") {
+        router = _router;
         extToken = _extToken;
     }
 
