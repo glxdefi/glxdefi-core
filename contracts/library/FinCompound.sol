@@ -20,7 +20,9 @@ library FinCompound {
 
         underlying.approve(receiver, amount);
 
-        uint mintResult = cToken.mint(amount);
+        if (cToken.mint(amount) != 0) {
+            revert();
+        }
         return mintResult;
     }
 
@@ -32,7 +34,9 @@ library FinCompound {
         IERC20 underlying = IERC20(token);
         ICErc20 cToken = ICErc20(from);
         uint256 amount = cToken.balanceOf(from);
-        uint256 redeemResult = cToken.redeem(amount);
+        if (cToken.redeem(amount) != 0) {
+            revert();
+        }
 
         return underlying.balanceOf(msg.sender);
     }
