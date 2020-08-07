@@ -65,6 +65,8 @@ contract GLXGame is GLXLifecycle{
     function initialize(
         address _router,
         address _extToken,
+        address _finToken,
+
         uint _startBlockNumber,
         uint _endBlockNumber,
         bool _isOnChainGame,
@@ -74,6 +76,7 @@ contract GLXGame is GLXLifecycle{
 
         router = _router;
         extToken = _extToken;
+        finToken = _finToken;
 
         _initBlockNumber(_startBlockNumber, _endBlockNumber);
 

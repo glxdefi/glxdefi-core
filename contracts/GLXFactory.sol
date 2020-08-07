@@ -24,6 +24,8 @@ contract GLXFactory is Ownable {
     //创建游戏合约，当游戏合于对应的代币没有创建是，还会自动创建代币
     function createGame(
         address extToken,
+        address finToken,
+
         uint startBlockNumber,
         uint endBLockNumber,
         bool isOnChainGame,
@@ -33,7 +35,7 @@ contract GLXFactory is Ownable {
 
         require(extToken != address(0), 'GLXFactory: TOKEN_INVALID');
 
-        game = _createGame(extToken, startBlockNumber, endBLockNumber, isOnChainGame, gameObjectToken, gameObjectTokenSupply);
+        game = _createGame(extToken, finToken, startBlockNumber, endBLockNumber, isOnChainGame, gameObjectToken, gameObjectTokenSupply);
         getGameExtToken[game] = extToken;
 
         if (getIntToken[extToken] == address(0)) {
@@ -62,7 +64,7 @@ contract GLXFactory is Ownable {
         }
 
         //初始化游戏合约参数
-        IGLXGame(game).initialize(router, extToken, startBlockNumber, endBLockNumber, isOnChainGame, gameObjectToken, gameObjectTokenSupply);
+        IGLXGame(game).initialize(router, extToken, finToken, startBlockNumber, endBLockNumber, isOnChainGame, gameObjectToken, gameObjectTokenSupply);
 
         return game;
     }
