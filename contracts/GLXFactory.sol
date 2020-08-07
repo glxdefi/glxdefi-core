@@ -22,20 +22,25 @@ contract GLXFactory is IGLXFactory, Ownable {
 
     //创建游戏合约，当游戏合于对应的代币没有创建是，还会自动创建代币
     function createGame(
-        address token,
+        address extToken,
         uint startBlockNumber,
         uint endBLockNumber,
-        bool isOnChainGame
-    ) external returns (address game) {
+        bool isOnChainGame,
+        address gameObjectToken,
+        uint256 gameObjectTokenSupply
+) external returns (address game) {
+
+        require(extToken != address(0), 'GLXFactory: TOKEN_INVALID');
+
         //创建游戏合约
         bytes memory bytecode = type(GLXGame).creationCode;
-        bytes32 salt = keccak256(abi.encodePacked(token0));
+        bytes32 salt = keccak256(abi.encodePacked(extToken));
 
         assembly {
             game := create2(0, add(bytecode, 32), mload(bytecode), salt)
         }
         //初始化游戏合约参数
-        IGLXGame(game).initialize(router, isOnChainGame, startBlockNumber, endBLockNumber);
+        IGLXGame(game).initialize(router, startBlockNumber, endBLockNumber, isOnChainGame, gameObjectToken, gameObjectTokenSupply);
         getGameExtToken[game] = extToken;
 
 

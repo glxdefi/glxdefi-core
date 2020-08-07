@@ -15,7 +15,14 @@ contract GLXGame is IGLXGame, GLXLifecycle, Ownable{
 
     //对赌标的是否是链上数据：true代表是 链上数据，false代表是 链下数据
     bool public isOnChainGame;
-    bool public isOffChainOracled;
+    //游戏结果是否已经揭晓
+    bool public isGameResultOpen;
+
+    //游戏对赌标的token，如DAI
+    address public gameObjectToken;
+    //对赌标的的目标发行量，到开奖时，实际只大等于这个值，则表示正方赢；否则反方赢
+    uint256 public gameObjectTokenSupply;
+
 
     //游戏输赢结果，true 表示 正方赢，false表示反方赢
     bool public gameResult;
@@ -48,15 +55,23 @@ contract GLXGame is IGLXGame, GLXLifecycle, Ownable{
     // 当被factory创建后就会调用一次init
     function initialize(
         address _router,
-        bool _isOnChainGame,
         uint _startBlockNumber,
-        uint _endBlockNumber
+        uint _endBlockNumber,
+        bool _isOnChainGame,
+        address _gameObjectToken,
+        uint256 _gameObjectTokenSupply
     )  external onlyFactory {
 
         router = _router;
-        isOnChainGame = _isOnChainGame;
 
         _initBlockNumber(_startBlockNumber, _endBlockNumber);
+
+        isOnChainGame = _isOnChainGame;
+
+        //如果为链下数据，后面两个参数缺省为0
+        gameObjectToken = _gameObjectToken;
+        gameObjectTokenSupply = _gameObjectTokenSupply;
+
     }
 
     //防止重入攻击
@@ -68,16 +83,16 @@ contract GLXGame is IGLXGame, GLXLifecycle, Ownable{
     }
 
     modifier onlyRouter() {
-        require(msg.sender == router, 'GLXGame: FORBIDDEN'); // sufficient check
+        require(msg.sender == router, 'GLXGame: FORBIDDEN');
         _;
     }
 
     modifier onlyFactory() {
-        require(msg.sender == factory, 'GLXGame: FORBIDDEN'); // sufficient check
+        require(msg.sender == factory, 'GLXGame: FORBIDDEN');
         _;
     }
 
-    //是否可以领取奖品了
+    //是否可以领取收益了
     modifier whenCanReceive() {
         require(!isCanReceive(), 'GLXGame: NOT_CAN_RECEIVE');
         _;
@@ -98,11 +113,35 @@ contract GLXGame is IGLXGame, GLXLifecycle, Ownable{
     }
 
 
+
+    //查看是否拥有需要提取的收益
+    function isExistBonusNeedReceive() public view returns (bool) {
+        if (!isCanReceive()) {
+            return false;
+        }
+
+        if ((trueAmountMap[msg.sender] != address(0)) && gameResult) {
+                return true;
+        }
+
+        if ((falseAmountMap[msg.sender] != address(0)) && !gameResult) {
+            return true;
+        }
+
+        if (_account == maxAmountAccount) {
+            return true;
+        }
+
+        return false;
+    }
+
+
     function bet(address account, bool direction, uint256 amount) external lock whenNotStarted onlyRouter returns (bool) {
         require(account != address(0), "GLXGame: BET_ADDRESS_ZERO");
         require(amount > 0, "GLXGame: BET_AMOUNT_ZERO");
 
         if (direction) {
+            //押注正方，登记金额
             trueTotalAmount = trueTotalAmount.add(amount);
             trueTotalCount = trueTotalCount.add(1);
             trueAmountMap[account] = trueAmountMap[account].add(amount);
@@ -111,6 +150,7 @@ contract GLXGame is IGLXGame, GLXLifecycle, Ownable{
                 maxAmountAccount = account;
             }
         } else {
+            //押注反方，登记金额
             falseTotalAmount = falseTotalAmount.add(amount);
             falseTotalCount = falseTotalCount.add(1);
             falseAmountMap[account] = falseAmountMap[account].add(amount);
@@ -124,6 +164,7 @@ contract GLXGame is IGLXGame, GLXLifecycle, Ownable{
         return true;
     }
 
+    //领取收益
     function receive(address _account) external lock whenCanReceive returns (bool) {
         require(_account != address(0), "GLXGame: RECEIVE_ADDRESS_ZERO");
         require(!isReceivedMap[_account], "GLXGame: RECEIVED");
@@ -132,28 +173,29 @@ contract GLXGame is IGLXGame, GLXLifecycle, Ownable{
         require(falseTotalAmount != 0, "GLXGame: FALSE_TOTAL_AMOUNT_ZERO");
 
         //押注链下数据 需要oracle结果
-        require(isOnChainGame || isOffChainOracled, "GLXGame: OFF_CHAIN_GAME_NOT_ORACLE");
+        require(isGameResultOpen, "GLXGame: 还没有开奖");
 
+        uint64 receiveAmount = 0;
 
+        //计算
         if (gameResult) {
             require(trueAmountMap[_account] != 0, "GLXGame: NOT_EXIST");
 
             uint64 receiveAmount = GLXHelper.calReceiveAmount(trueAmountMap[_account], trueTotalAmount, falseTotalAmount);
-            GLXHelper.safeTransfer(_account, receiveAmount);
-
-            isReceivedMap[_account] = true;
-
         } else {
             require(falseAmountMap[_account] != 0, "GLXGame: NOT_EXIST");
 
             uint64 receiveAmount = GLXHelper.calReceiveAmount(falseAmountMap[_account], falseTotalAmount, trueTotalAmount);
-            GLXHelper.safeTransfer(_account, receiveAmount);
-
-            isReceivedMap[_account] = true;
         }
 
         if (_account == maxAmountAccount) {
-            GLXHelper.safeTransfer(_account, interestIncome);
+            //如果是押注本金最大的，可以独享 全额利息收益
+            receiveAmount = receiveAmount.add(interestIncome);
+        }
+        if(receiveAmount > 0) {
+            GLXHelper.safeTransfer(_account, receiveAmount);
+
+            isReceivedMap[_account] = true;
         }
 
 
@@ -161,16 +203,40 @@ contract GLXGame is IGLXGame, GLXLifecycle, Ownable{
     }
 
 
+    //当对赌的标的 是链上数据，需要触发开奖,谁都可以来开奖
+    function updateGameResult() external lock whenEnded returns (bool) {
 
-    //当对赌的标的 是链下数据，需要oracle喂结果
-    function updateGameResultByOracle(bool _direction) external lock onlyRouter whenEnded returns (bool) {
+        //押注链上数据 需要oracle结果
+        require(isOnChainGame, "GLXGame: NOT_ON_CHAIN_GAME");
+        require(!isGameResultOpen, "GLXGame: ALREADY_ORACLED");
+
+        if (IERC20(gameObjectToken).totalSupply >= gameObjectTokenSupply) {
+            gameResult = true;
+        } else {
+            gameResult = false;
+        }
+
+        isGameResultOpen = true;
+        return true;
+    }
+
+
+    //当对赌的标的 是链下数据，需要oracle喂结果;防止缺省值影响，2代表true正方赢， 1代表false 反方赢，
+    function updateGameResultByOracle(uint8 _gameResult) external lock onlyRouter whenEnded returns (bool) {
 
         //押注链下数据 需要oracle结果
         require(!isOnChainGame, "GLXGame: NOT_OFF_CHAIN_GAME");
-        require(!isOffChainOracled, "GLXGame: ALREADY_ORACLED");
+        require(!isGameResultOpen, "GLXGame: ALREADY_ORACLED");
+        require(_gameResult == 1 ||  _gameResult == 2, "GLXGame: gameResult不合法");
 
-        isOffChainOracled = true;
-        direction = _direction;
+
+        if(_gameResult == 1) {
+            gameResult = true;
+        } else{
+            gameResult = true;
+        }
+
+        isGameResultOpen = true;
 
         return true;
     }
