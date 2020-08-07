@@ -10,12 +10,13 @@ import "./library/CompoundHelper.sol";
 
 
 
-contract GLXGame is IGLXGame, GLXLifecycle, Ownable{
+contract GLXGame is IGLXGame, GLXLifecycle{
 
     using SafeMath for uint256;
 
     address public factory;
     address public router;
+    address public extToken;
     address public finToken;
 
 
@@ -52,6 +53,7 @@ contract GLXGame is IGLXGame, GLXLifecycle, Ownable{
 
     address public maxAmount;
     address public maxAmountAccount;
+    //利息总收入
     address public interestIncome;
 
     uint8 private unlocked = 0;
@@ -62,6 +64,7 @@ contract GLXGame is IGLXGame, GLXLifecycle, Ownable{
     // 当被factory创建后就会调用一次init
     function initialize(
         address _router,
+        address _extToken,
         uint _startBlockNumber,
         uint _endBlockNumber,
         bool _isOnChainGame,
@@ -70,6 +73,7 @@ contract GLXGame is IGLXGame, GLXLifecycle, Ownable{
     )  external onlyFactory {
 
         router = _router;
+        extToken = _extToken;
 
         _initBlockNumber(_startBlockNumber, _endBlockNumber);
 
@@ -96,6 +100,26 @@ contract GLXGame is IGLXGame, GLXLifecycle, Ownable{
 
     modifier onlyFactory() {
         require(msg.sender == factory, 'GLXGame: FORBIDDEN');
+        _;
+    }
+
+    modifier whenNotStarted() {
+        require(!isStarted(), "Start: started");
+        _;
+    }
+    modifier whenStarted() {
+        require(isStarted(), "Start: not started");
+        _;
+    }
+
+
+    modifier whenNotEnded() {
+        require(!isEnded(), "End: ended");
+        _;
+    }
+
+    modifier whenEnded() {
+        require(isEnded(), "End: not ended");
         _;
     }
 
@@ -143,7 +167,7 @@ contract GLXGame is IGLXGame, GLXLifecycle, Ownable{
     }
 
 
-    function bet(address extToken, address account, bool direction, uint256 amount) external lock whenNotStarted onlyRouter returns (bool) {
+    function bet(address account, bool direction, uint256 amount) external lock whenNotStarted onlyRouter returns (bool) {
         require(account != address(0), "GLXGame: BET_ADDRESS_ZERO");
         require(amount > 0, "GLXGame: BET_AMOUNT_ZERO");
 
@@ -167,7 +191,6 @@ contract GLXGame is IGLXGame, GLXLifecycle, Ownable{
             }
         }
 
-        address extToken = IGLXFactory(factory).getGameExtToken[address(this)];
         CompoundHelper.supply(extToken,  finToken, amount);
 
         return true;
@@ -226,7 +249,6 @@ contract GLXGame is IGLXGame, GLXLifecycle, Ownable{
             gameResult = false;
         }
 
-        address extToken = IGLXFactory(factory).getGameExtToken[address(this)];
         uint256 totalAmount = CompoundHelper.redeem(extToken,  finToken);
         uint256 initAmount = trueTotalAmount.add(falseTotalAmount);
 

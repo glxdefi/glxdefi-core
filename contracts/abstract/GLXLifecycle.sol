@@ -4,7 +4,7 @@ pragma solidity ^0.6.0;
 import "@openzeppelin/contracts/GSN/Context.sol";
 
 
-abstract contract GLXLifecycle is Context {
+ contract GLXLifecycle is Context {
 
     uint private startBlockNumber;
 
@@ -33,26 +33,6 @@ abstract contract GLXLifecycle is Context {
             return true;
         }
         return false;
-    }
-
-
-    modifier whenNotStarted() {
-        require(!isStarted(), "Start: started");
-        _;
-    }
-    modifier whenStarted() {
-        require(isStarted(), "Start: not started");
-        _;
-    }
-
-
-    modifier whenNotEnded() {
-        require(!isEnded(), "End: ended");
-        _;
-    }
-    modifier whenEnded() {
-        require(isEnded(), "End: not ended");
-        _;
     }
 
 

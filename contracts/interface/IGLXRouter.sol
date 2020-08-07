@@ -3,7 +3,7 @@ pragma solidity ^0.6.0;
 interface IGLXRouter {
 
     // 押注
-    function bet(address game, address extToken, bool direction, uint256 amount) external returns (bool);
+    function bet(address game, bool direction, uint256 amount) external returns (bool);
 
     // 用户领奖领奖：减少平台发奖成本开销
     function getIncome(address game) external returns (bool);

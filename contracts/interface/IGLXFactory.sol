@@ -9,4 +9,9 @@ interface IGLXFactory {
     function setRouter(address) external;
 
     function setFeeTo(address) external;
+
+    function getIntToken(address extToken) external view returns (address intToken);
+
+    function getGameExtToken(address game) external view returns (address extToken);
+
 }

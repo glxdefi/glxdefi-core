@@ -33,35 +33,53 @@ contract GLXFactory is IGLXFactory, Ownable {
 
         require(extToken != address(0), 'GLXFactory: TOKEN_INVALID');
 
-        //创建游戏合约
-        bytes memory bytecode = type(GLXGame).creationCode;
-        bytes32 salt = keccak256(abi.encodePacked(extToken));
-        address game;
-        assembly {
-            game := create2(0, add(bytecode, 32), mload(bytecode), salt)
-        }
-        //初始化游戏合约参数
-        IGLXGame(game).initialize(router, startBlockNumber, endBLockNumber, isOnChainGame, gameObjectToken, gameObjectTokenSupply);
+        game = _createGame(extToken, startBlockNumber, endBLockNumber, isOnChainGame, gameObjectToken, gameObjectTokenSupply);
         getGameExtToken[game] = extToken;
-
-
 
         if (getIntToken[extToken] == address(0)) {
             //创建外部代币对应的内部代币合约
-            bytes memory bytecode = type(GLXToken).creationCode;
-            bytes32 salt = keccak256(abi.encodePacked(extToken));
-
-            address intToken;
-            assembly {
-                intToken := create2(0, add(bytecode, 32), mload(bytecode), salt)
-            }
-
-            //之所以没有把router放到initialize中是为了加入router有变更，需要重新set，而initialize通常只能调用一次
-            GLXToken(intToken).setRouter(router);
-            //将部署合约地址设置为token的owner；之所以放到后面，是因为setRouter需要factory作为owner才能操作
-            GLXToken(intToken).initialize(msg.sender);
+            address intToken = _createIntToken(extToken);
             getIntToken[extToken] = intToken;
         }
+
+        return game;
+    }
+
+    function _createGame(
+        address extToken,
+        uint startBlockNumber,
+        uint endBLockNumber,
+        bool isOnChainGame,
+        address gameObjectToken,
+        uint256 gameObjectTokenSupply
+    ) private returns (address game){
+
+        //创建游戏合约
+        bytes memory bytecode = type(GLXGame).creationCode;
+        bytes32 salt = keccak256(abi.encodePacked(extToken));
+        assembly {
+            game := create2(0, add(bytecode, 32), mload(bytecode), salt)
+        }
+
+        //初始化游戏合约参数
+        IGLXGame(game).initialize(router, extToken, startBlockNumber, endBLockNumber, isOnChainGame, gameObjectToken, gameObjectTokenSupply);
+
+        return game;
+    }
+
+    function _createIntToken(address extToken) private returns (address intToken){
+        bytes memory bytecode = type(GLXToken).creationCode;
+        bytes32 salt = keccak256(abi.encodePacked(extToken));
+
+        assembly {
+            intToken := create2(0, add(bytecode, 32), mload(bytecode), salt)
+        }
+
+        //之所以没有把router放到initialize中是为了加入router有变更，需要重新set，而initialize通常只能调用一次
+        GLXToken(intToken).setRouter(router);
+        //将部署合约地址设置为token的owner；之所以放到后面，是因为setRouter需要factory作为owner才能操作
+        GLXToken(intToken).initialize(msg.sender);
+
     }
 
 

@@ -21,24 +21,24 @@ contract GLXRouter is IGLXRouter,Ownable {
 
     modifier validGame(address game) {
         require(game != address(0), 'GLXRouter: GAME_INVALID');
-        require(IGLXFactory(factory).getGameExtToken[game] == address(0), 'GLXRouter: GAME_NOT_EXIST');
+        require(IGLXFactory(factory).getGameExtToken(game) == address(0), 'GLXRouter: GAME_NOT_EXIST');
         _;
     }
 
     // 押注
     function bet(
         address game,
-        address extToken,
         bool direction,
         uint256 amount
     ) external validGame(game) returns (bool) {
-        require(extToken != address(0), 'GLXRouter: GAME_EXTERNAL_TOKEN_INVALID');
-        require(IGLXFactory(factory).getIntToken[extToken] != address(0), 'GLXRouter: EXT_TOKEN_NOT_HAVE_INT_TOKEN');
-        require(IGLXFactory(factory).getGameExtToken[game] == extToken, 'GLXRouter: GAME_EXT_TOKEN_NOT_MATCH');
+        address extToken = IGLXFactory(factory).getGameExtToken(game);
+        require( extToken != address(0), 'GLXRouter: GAME_EXT_TOKEN_NOT_MATCH');
+        require(IGLXFactory(factory).getIntToken(extToken) != address(0), 'GLXRouter: EXT_TOKEN_NOT_HAVE_INT_TOKEN');
+
 
         GLXHelper.safeTransferFrom(extToken, msg.sender, game, amount);
 
-        require(IGLXGame(game).bet(extToken, msg.sender, direction, amount), 'GLXRouter: GAME_BET_FAILED');
+        require(IGLXGame(game).bet(msg.sender, direction, amount), 'GLXRouter: GAME_BET_FAILED');
 
         return true;
     }
