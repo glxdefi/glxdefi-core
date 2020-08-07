@@ -13,7 +13,9 @@ contract GLXGame is IGLXGame, Lifecycle{
     address public factory;
     address public router;
 
+    //对赌标的是否是链上数据：true代表是 链上数据，false代表是 链下数据
     bool public isOnChainGame;
+
     //游戏输赢结果，true 表示 正方赢，false表示反方赢
     bool public gameResult;
 
