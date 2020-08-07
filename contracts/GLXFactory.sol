@@ -13,7 +13,7 @@ contract GLXFactory is IGLXFactory, Ownable {
     //GLXGame => USDT
     mapping(address => address) public getGameExtToken;
 
-    function createGame(address extToken, bool isOnChainGame) external returns (address game) {
+    function createGame(address token, uint startBlockNumber, uint endBLockNumber, bool isOnChainGame) external returns (address game) {
         //创建游戏合约
         bytes memory bytecode = type(GLXGame).creationCode;
         bytes32 salt = keccak256(abi.encodePacked(token0));
@@ -49,6 +49,5 @@ contract GLXFactory is IGLXFactory, Ownable {
         require(_feeTo != address(0), 'GLXFactory: ADDRESS_NULL');
         feeTo = _feeTo;
     }
-
 
 }

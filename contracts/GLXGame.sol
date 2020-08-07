@@ -4,9 +4,9 @@ import "@openzeppelin/contracts/math/SafeMath.sol";
 
 import "./interface/IGLXGame.sol";
 import "./library/GLXHelper.sol";
-import "./abstract/Lifecycle.sol";
+import "./abstract/GLXLifecycle.sol";
 
-contract GLXGame is IGLXGame, Lifecycle{
+contract GLXGame is IGLXGame, GLXLifecycle, Ownable{
 
     using SafeMath for uint256;
 
@@ -15,6 +15,7 @@ contract GLXGame is IGLXGame, Lifecycle{
 
     //对赌标的是否是链上数据：true代表是 链上数据，false代表是 链下数据
     bool public isOnChainGame;
+    bool public isOffChainOracled;
 
     //游戏输赢结果，true 表示 正方赢，false表示反方赢
     bool public gameResult;
@@ -40,7 +41,7 @@ contract GLXGame is IGLXGame, Lifecycle{
     address public maxAmountAccount;
     address public interestIncome;
 
-    constructor() public {
+    constructor(uint _startBlockNumber, uint _endBlockNumber) GLXLifecycle(_startBlockNumber, _endBlockNumber) public {
         factory = msg.sender;
         isOnlineGame = true;
     }
@@ -90,32 +91,36 @@ contract GLXGame is IGLXGame, Lifecycle{
         return true;
     }
 
-    function receive(address account) external lock whenEnded returns (bool) {
-        require(account != address(0), "GLXGame: RECEIVE_ADDRESS_ZERO");
-        require(!isReceivedMap[account], "GLXGame: RECEIVED");
+    function receive(address _account) external lock whenEnded returns (bool) {
+        require(_account != address(0), "GLXGame: RECEIVE_ADDRESS_ZERO");
+        require(!isReceivedMap[_account], "GLXGame: RECEIVED");
 
         require(trueTotalAmount != 0, "GLXGame: TRUE_TOTAL_AMOUNT_ZERO");
         require(falseTotalAmount != 0, "GLXGame: FALSE_TOTAL_AMOUNT_ZERO");
 
+        //押注链下数据 需要oracle结果
+        require(isOnChainGame || isOffChainOracled, "GLXGame: OFF_CHAIN_GAME_NOT_ORACLE");
+
+
         if (gameResult) {
-            require(trueAmountMap[account] != 0, "GLXGame: NOT_EXIST");
+            require(trueAmountMap[_account] != 0, "GLXGame: NOT_EXIST");
 
-            uint64 receiveAmount = GLXHelper.calReceiveAmount(trueAmountMap[account], trueTotalAmount, falseTotalAmount);
-            GLXHelper.safeTransfer(account, receiveAmount);
+            uint64 receiveAmount = GLXHelper.calReceiveAmount(trueAmountMap[_account], trueTotalAmount, falseTotalAmount);
+            GLXHelper.safeTransfer(_account, receiveAmount);
 
-            isReceivedMap[account] = true;
+            isReceivedMap[_account] = true;
 
         } else {
-            require(falseAmountMap[account] != 0, "GLXGame: NOT_EXIST");
+            require(falseAmountMap[_account] != 0, "GLXGame: NOT_EXIST");
 
-            uint64 receiveAmount = GLXHelper.calReceiveAmount(falseAmountMap[account], falseTotalAmount, trueTotalAmount);
-            GLXHelper.safeTransfer(account, receiveAmount);
+            uint64 receiveAmount = GLXHelper.calReceiveAmount(falseAmountMap[_account], falseTotalAmount, trueTotalAmount);
+            GLXHelper.safeTransfer(_account, receiveAmount);
 
-            isReceivedMap[account] = true;
+            isReceivedMap[_account] = true;
         }
 
-        if (account == maxAmountAccount) {
-            GLXHelper.safeTransfer(account, interestIncome);
+        if (_account == maxAmountAccount) {
+            GLXHelper.safeTransfer(_account, interestIncome);
         }
 
 
@@ -124,5 +129,17 @@ contract GLXGame is IGLXGame, Lifecycle{
 
 
 
+    //当对赌的标的 是链下数据，需要oracle喂结果
+    function updateGameResultByOracle(bool _direction) external lock onlyRouter whenEnded returns (bool) {
+
+        //押注链下数据 需要oracle结果
+        require(!isOnChainGame, "GLXGame: NOT_OFF_CHAIN_GAME");
+        require(!isOffChainOracled, "GLXGame: ALREADY_ORACLED");
+
+        isOffChainOracled = true;
+        direction = _direction;
+
+        return true;
+    }
 
 }

@@ -2,9 +2,9 @@ pragma solidity ^0.6.0;
 
 interface IGLXFactory {
 
-    event GameGreated(address token, bool isOnChainGame);
+    event GameCreated(address token, uint startBlockNumber, uint endBLockNumber, bool isOnChainGame);
 
-    function createGame(address token, bool isOnChainGame) external returns (address game);
+    function createGame(address token, uint startBlockNumber, uint endBLockNumber, bool isOnChainGame) external returns (address game);
 
     function setRouter(address) external;
 
