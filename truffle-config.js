@@ -10,6 +10,12 @@ const infuraProjectId = process.env.INFURA_PROJECT_ID;
 
 module.exports = {
   networks: {
+    development: {
+      host: "localhost",
+      port: 7545,
+      network_id: "*",
+      gas: 100000000,
+    },
     ropsten: {
       provider: () => new HDWalletProvider(process.env.DEV_MNEMONIC, "https://ropsten.infura.io/v3/" + infuraProjectId),
       network_id: 3,       // Ropsten's id
