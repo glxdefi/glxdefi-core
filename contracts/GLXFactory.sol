@@ -49,6 +49,7 @@ contract GLXFactory is Ownable {
 
     function _createGame(
         address extToken,
+        address finToken,
         uint startBlockNumber,
         uint endBLockNumber,
         bool isOnChainGame,

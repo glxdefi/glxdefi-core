@@ -7,7 +7,6 @@ interface IGLXFactory {
     function createGame(
         address extToken,
         address finToken,
-
         uint startBlockNumber,
         uint endBLockNumber,
         bool isOnChainGame,
