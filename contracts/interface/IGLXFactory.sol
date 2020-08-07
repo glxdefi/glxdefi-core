@@ -5,8 +5,11 @@ interface IGLXFactory {
     event GameCreated(address token, uint startBlockNumber, uint endBLockNumber, bool isOnChainGame);
 
     function createGame(
+        address router,
         address extToken,
+        address intToken,
         address finToken,
+        address liquidPool,
         uint startBlockNumber,
         uint endBLockNumber,
         bool isOnChainGame,
@@ -22,4 +25,5 @@ interface IGLXFactory {
 
     function getGameExtToken(address game) external view returns (address extToken);
 
+    function getLiquidPool(address intToken) external view returns (address liquidPool);
 }

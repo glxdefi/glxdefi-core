@@ -10,6 +10,8 @@ import "./library/GLXHelper.sol";
 
 contract GLXRouter is Ownable {
 
+    using SafeMath for uint256;
+
     address public factory;
 
 
@@ -48,29 +50,28 @@ contract GLXRouter is Ownable {
 
         //押注的同时将会铸币，会将这部分 平台代币分 70% 给用户,30%转到流动性挖矿pool里做利息
         _mint(game, intToken, amount);
-        GLXHelper.mint(intToken, msg.sender, amount);
 
         return true;
     }
 
     //押注的同时将会铸币，会将这部分 平台代币分 70% 给用户,30%转到流动性挖矿pool里做利息
-    function _mint(address game, address intToken, amount) internal returns (bool) {
+    function _mint(address game, address intToken, uint256 amount) internal returns (bool) {
         //获取当前是参与序列好
         uint256 curUserCount = IGLXGame(game).getCurUserCount();
         require(curUserCount > 0, 'GLXRouter: CUR_USER_COUNT_IS_ZERO');
 
 
-        uint256 totalMintAmount = amount.div(uint256(1).add(curUserCount.div(uint256(10))));
+        uint256 totalMintAmount = amount.div( (uint256(1).add(curUserCount.div(uint256(10))) ));
         uint256 userMintAmount = amount.mul(uint256(70));
         uint256 liquidMintAmount = totalMintAmount.sub(userMintAmount);
 
         GLXHelper.safeTransfer(intToken, msg.sender, userMintAmount);
 
-        address liquidPool = IGLXFactory(factory).
-        GLXHelper.safeTransfer(intToken, msg.sender, userMintAmount);
+        address liquidPool = IGLXFactory(factory).getLiquidPool(intToken);
+        GLXHelper.safeTransfer(liquidPool, msg.sender, userMintAmount);
 
 
-        return 0;
+        return true;
     }
 
     // 用户自行领奖：减少平台发奖成本开销

@@ -6,9 +6,7 @@ import "./GLXToken.sol";
 
 contract GLXFactory is Ownable {
 
-
     address public feeTo;
-    address public router;
 
     //GLXGame => DAI
     mapping(address => address) public getGameExtToken;
@@ -25,9 +23,11 @@ contract GLXFactory is Ownable {
 
     //创建游戏合约，当游戏合于对应的代币没有创建是，还会自动创建代币
     function createGame(
+        address router,
         address extToken,
         address intToken,
         address finToken,
+        address liquidPool,
         uint startBlockNumber,
         uint endBLockNumber,
         bool isOnChainGame,
@@ -38,11 +38,15 @@ contract GLXFactory is Ownable {
         require(extToken != address(0), 'GLXFactory: TOKEN_INVALID');
         require(intToken != address(0), 'GLXFactory: TOKEN_INVALID');
 
-        game = _createGame(extToken, finToken, startBlockNumber, endBLockNumber, isOnChainGame, gameObjectToken, gameObjectTokenSupply);
+        game = _createGame(router, extToken, finToken, startBlockNumber, endBLockNumber, isOnChainGame, gameObjectToken, gameObjectTokenSupply);
         getGameExtToken[game] = extToken;
 
         if (getIntToken[extToken] == address(0)) {
             getIntToken[extToken] = intToken;
+        }
+
+        if (getLiquidPool[intToken] == address(0)) {
+            getLiquidPool[intToken] = liquidPool;
         }
 
         return game;
@@ -50,6 +54,7 @@ contract GLXFactory is Ownable {
 
 
     function _createGame(
+        address router,
         address extToken,
         address finToken,
         uint startBlockNumber,
@@ -72,11 +77,6 @@ contract GLXFactory is Ownable {
         return game;
     }
 
-
-    function setRouter(address _router) external onlyOwner {
-        require(_router != address(0), 'GLXFactory: ADDRESS_NULL');
-        router = _router;
-    }
 
     function setFeeTo(address _feeTo) external onlyOwner {
         require(_feeTo != address(0), 'GLXFactory: ADDRESS_NULL');
