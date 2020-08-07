@@ -12,8 +12,8 @@ interface IGLXGame {
     // 押注
     function bet(address extToken, address account, bool direction, uint256 amount) external returns (bool);
 
-    // 开奖
-    function receive(address account) external returns (bool);
+    // 获取收益
+    function getIncome(address account) external returns (bool);
 
     //当对赌的标的 是链上数据，需要触发开奖,谁都可以来开奖
     function updateGameResult() external lock whenEnded returns (bool);

@@ -170,7 +170,7 @@ contract GLXGame is IGLXGame, GLXLifecycle, Ownable{
     }
 
     //领取收益
-    function receive(address _account) external lock whenCanReceive returns (bool) {
+    function getIncome(address _account) external lock whenCanReceive returns (bool) {
         require(_account != address(0), "GLXGame: RECEIVE_ADDRESS_ZERO");
         require(!isReceivedMap[_account], "GLXGame: RECEIVED");
 

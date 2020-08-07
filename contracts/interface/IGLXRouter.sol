@@ -1,4 +1,4 @@
-pragma solidity ^0.4.0;
+pragma solidity ^0.6.0;
 
 interface IGLXRouter {
 
@@ -6,7 +6,7 @@ interface IGLXRouter {
     function bet(address game, address extToken, bool direction, uint256 amount) external returns (bool);
 
     // 用户领奖领奖：减少平台发奖成本开销
-    function receive(address game) external returns (bool);
+    function getIncome(address game) external returns (bool);
 
     //当对赌的标的 是链上数据，需要触发开奖
     function updateGameResult(address game) external returns (bool);

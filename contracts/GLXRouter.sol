@@ -44,9 +44,9 @@ contract GLXRouter is IGLXRouter,Ownable {
     }
 
     // 用户自行领奖：减少平台发奖成本开销
-    function receive(address game) external validGame(game) returns (bool) {
+    function getIncome(address game) external validGame(game) returns (bool) {
 
-        require(IGLXGame(game).receive(msg.sender), 'GLXRouter: GAME_RECEIVE_FAILED');
+        require(IGLXGame(game).getIncome(msg.sender), 'GLXRouter: GAME_RECEIVE_FAILED');
 
         return true;
     }
@@ -60,7 +60,7 @@ contract GLXRouter is IGLXRouter,Ownable {
     //当对赌的标的 是链下数据，需要oracle喂结果
 
     //当对赌的标的 是链下数据，需要oracle喂结果;防止缺省值影响，2代表true正方赢， 1代表false 反方赢，
-    function updateGameResultByOracle(address game,uint8 gameResult) external olnyOwner validGame(game) returns (bool)
+    function updateGameResultByOracle(address game,uint8 gameResult) external olnyOwner validGame(game) returns (bool) {
 
         require(IGLXGame(game).updateGameResultByOracle(gameResult), 'GLXRouter: GAME_ORACLE_FAILED');
 
