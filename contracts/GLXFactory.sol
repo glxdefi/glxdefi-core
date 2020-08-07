@@ -81,7 +81,7 @@ contract GLXFactory is Ownable {
         //之所以没有把router放到initialize中是为了加入router有变更，需要重新set，而initialize通常只能调用一次
         GLXToken(intToken).setRouter(router);
         //将部署合约地址设置为token的owner；之所以放到后面，是因为setRouter需要factory作为owner才能操作
-        GLXToken(intToken).initialize(msg.sender);
+        GLXToken(intToken).initialize(msg.sender, extToken);
 
     }
 

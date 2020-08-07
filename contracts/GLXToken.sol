@@ -8,20 +8,20 @@ contract GLXToken is Ownable, ERC20 {
 
     address public router;
 
-    address public daiAddress;
+    address public extToken;
 
     modifier onlyRouter() {
-        require(router == _msgSender(), "Router: ONLY_ROUTER");
+        require(router == _msgSender(), "GLXToken: ONLY_ROUTER");
         _;
     }
 
-    constructor(address _daiAddress) public ERC20("GLXToken", "GLX") {
-        daiAddress = _daiAddress;
+    constructor() public ERC20("GLXTokenOfHope", "HOPE") {
     }
 
     // 当被factory创建后就会调用一次init
-    function initialize( address _newOwner)  external onlyOwner {
+    function initialize( address _newOwner, address _extToken)  external onlyOwner {
         transferOwnership(_newOwner);
+        extToken = _extToken;
     }
 
     function setRouter(address _router) public onlyOwner {
@@ -37,16 +37,18 @@ contract GLXToken is Ownable, ERC20 {
     }
 
     function swap(uint amount) public {
-        require(amount > 0);
-        uint swapAmount = calSwapAmount(msg.sender, amount);
-        require(swapAmount > 0);
+        require(amount > 0, "GLXToken: AMOUNT_IS_ZERO");
+
+        uint swapAmount = calSwapAmount(amount);
+        require(swapAmount > 0, "GLXToken: SWAP_AMOUNT_IS_ZERO");
+
         _burn(msg.sender, amount);
-        IERC20 dai = IERC20(daiAddress);
+        IERC20 dai = IERC20(extToken);
         dai.transfer(msg.sender, swapAmount);
     }
 
-    function calSwapAmount(address account, uint amount) internal returns (uint) {
-        IERC20 dai = IERC20(daiAddress);
+    function calSwapAmount(uint amount) internal returns (uint) {
+        IERC20 dai = IERC20(extToken);
         return dai.balanceOf(msg.sender).mul(amount).div(totalSupply());
     }
 }

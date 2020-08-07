@@ -37,24 +37,25 @@ contract MockCErc20 is Ownable {
     }
 
     function supplyRatePerBlock() external view returns (uint256){
-        return uint(0);
+        return uint256(0);
     }
 
-    function redeem(uint _amount) external returns (uint){
+    function redeem(uint256 _amount) external returns (uint){
         require(_amount > 0);
         require(balanceOf[msg.sender] >= _amount);
         return redeemInternal(_amount);
     }
 
-    function redeemInternal(uint redeemAmount) internal returns (uint){
+    function redeemInternal(uint256 redeemAmount) internal returns (uint256){
         uint256 redeemTotal = redeemAmount.add(redeemAmount.mul(ratio).div(1e18));
         IERC20 underlying = IERC20(erc20Address);
         underlying.transfer(msg.sender, redeemTotal);
         balanceOf[msg.sender] -= redeemAmount;
-        return uint(0);
+        return uint256(0);
     }
 
-    function redeemUnderlying(uint _amount) external returns (uint){
-        return uint(0);
+    function redeemUnderlying(uint256 amount) external returns (uint256){
+        require(amount > 0, "MockCErc20 : AMOUNT_IS_ZERO");
+        return uint256(0);
     }
 }
