@@ -10,10 +10,12 @@ contract GLXFactory is Ownable {
     address public feeTo;
     address public router;
 
-    //USDT  => GUSDT
-    mapping(address => address) public getIntToken;
-    //GLXGame => USDT
+    //GLXGame => DAI
     mapping(address => address) public getGameExtToken;
+    //DAI  => gDAI
+    mapping(address => address) public getIntToken;
+    //gDAI  => liquidPool
+    mapping(address => address) public getLiquidPool;
 
 
     constructor() public {

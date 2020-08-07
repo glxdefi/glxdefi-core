@@ -26,4 +26,6 @@ interface IGLXGame {
 
     //查看是否拥有需要提取的奖品
     function isExistBonusNeedReceive() external view returns (bool);
+
+    function getCurUserCount() external view returns (uint);
 }

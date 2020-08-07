@@ -39,9 +39,9 @@ contract GLXGame is GLXLifecycle{
     //反方总押注额度
     uint256 public falseTotalAmount;
     //正方总参与人数
-    uint public trueTotalCount;
+    uint256 public trueTotalCount;
     //反方总参与人数
-    uint public falseTotalCount;
+    uint256 public falseTotalCount;
 
     //正方押注额度
     mapping (address => uint256) public trueAmountMap;
@@ -290,4 +290,8 @@ contract GLXGame is GLXLifecycle{
         return CompoundHelper.exchangeRate(finToken);
     }
 
+    //获取总参加人数
+    function getCurUserCount() external view returns (uint256) {
+        return trueTotalCount.add(falseTotalCount);
+    }
 }

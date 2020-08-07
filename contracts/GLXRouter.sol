@@ -33,14 +33,44 @@ contract GLXRouter is Ownable {
     ) external validGame(game) returns (bool) {
         address extToken = IGLXFactory(factory).getGameExtToken(game);
         require( extToken != address(0), 'GLXRouter: GAME_EXT_TOKEN_NOT_MATCH');
-        require(IGLXFactory(factory).getIntToken(extToken) != address(0), 'GLXRouter: EXT_TOKEN_NOT_HAVE_INT_TOKEN');
+
+        address intToken = IGLXFactory(factory).getIntToken(extToken);
+        require(intToken != address(0), 'GLXRouter: INT_TOKEN_NOT_EXIST');
 
 
+        //将用户的押注token 转到game合约
         GLXHelper.safeTransferFrom(extToken, msg.sender, game, amount);
 
+        //调用game合约，触发登记 以及 将押注token 拿去defi生息
         require(IGLXGame(game).bet(msg.sender, direction, amount), 'GLXRouter: GAME_BET_FAILED');
 
+
+
+        //押注的同时将会铸币，会将这部分 平台代币分 70% 给用户,30%转到流动性挖矿pool里做利息
+        _mint(game, intToken, amount);
+        GLXHelper.mint(intToken, msg.sender, amount);
+
         return true;
+    }
+
+    //押注的同时将会铸币，会将这部分 平台代币分 70% 给用户,30%转到流动性挖矿pool里做利息
+    function _mint(address game, address intToken, amount) internal returns (bool) {
+        //获取当前是参与序列好
+        uint256 curUserCount = IGLXGame(game).getCurUserCount();
+        require(curUserCount > 0, 'GLXRouter: CUR_USER_COUNT_IS_ZERO');
+
+
+        uint256 totalMintAmount = amount.div(uint256(1).add(curUserCount.div(uint256(10))));
+        uint256 userMintAmount = amount.mul(uint256(70));
+        uint256 liquidMintAmount = totalMintAmount.sub(userMintAmount);
+
+        GLXHelper.safeTransfer(intToken, msg.sender, userMintAmount);
+
+        address liquidPool = IGLXFactory(factory).
+        GLXHelper.safeTransfer(intToken, msg.sender, userMintAmount);
+
+
+        return 0;
     }
 
     // 用户自行领奖：减少平台发奖成本开销
@@ -66,4 +96,5 @@ contract GLXRouter is Ownable {
 
         return true;
     }
+
 }
