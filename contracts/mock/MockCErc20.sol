@@ -10,7 +10,7 @@ contract MockCErc20 is Ownable {
 
     mapping (address => uint256) public balanceOf;
 
-    uint256 public ratio = 3 * 1e17;
+    uint private ratio = 3 * 1e17;
 
     address public erc20Address;
 
@@ -33,11 +33,11 @@ contract MockCErc20 is Ownable {
     }
 
     function exchangeRateCurrent() external pure returns (uint256){
-        return uint256(0);
+        return ratio;
     }
 
     function supplyRatePerBlock() external pure returns (uint256){
-        return uint256(0);
+        return uint(0);
     }
 
     function redeem(uint _amount) external returns (uint){
