@@ -160,7 +160,7 @@ contract GLXGame is GLXLifecycle{
 
     //是否可以领取收益了
     modifier whenCanReceive() {
-        require(!isCanReceive(), 'GLXGame: NOT_CAN_RECEIVE');
+        require(isCanReceive(), 'GLXGame: NOT_CAN_RECEIVE');
         _;
     }
 
