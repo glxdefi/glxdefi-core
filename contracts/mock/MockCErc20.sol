@@ -49,6 +49,10 @@ contract MockCErc20 is Ownable {
     function redeemInternal(uint256 redeemAmount) internal returns (uint256){
         uint256 redeemTotal = redeemAmount.add(redeemAmount.mul(ratio).div(10));
         IERC20 underlying = IERC20(erc20Address);
+
+        if (underlying.balanceOf(address(this)) < redeemTotal) {
+            redeemTotal = redeemAmount;
+        }
         underlying.transfer(msg.sender, redeemTotal);
         balanceOf[msg.sender] -= redeemAmount;
         return uint256(0);

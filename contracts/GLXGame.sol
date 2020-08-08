@@ -74,6 +74,16 @@ contract GLXGame is GLXLifecycle{
     //防止重入攻击
     uint8 private unlocked = 1;
 
+
+    //押注事件
+    event Bet(address account, bool direction, uint256 amount);
+    //领取收益事件
+    event ReceiveIncome(address account);
+    //开奖事件
+    event UpdateGameResult();
+    //通过oracle开奖事件
+    event UpdateGameResultByOracle(uint8 _gameResult);
+
     constructor() public {
         factory = msg.sender;
     }
@@ -216,6 +226,8 @@ contract GLXGame is GLXLifecycle{
 
         CompoundHelper.supply(extToken,  finToken, amount);
 
+        emit Bet(account, direction, amount);
+
         return true;
     }
 
@@ -254,6 +266,7 @@ contract GLXGame is GLXLifecycle{
             isReceivedMap[_account] = true;
         }
 
+        emit ReceiveIncome(_account);
         return true;
     }
 
@@ -306,6 +319,8 @@ contract GLXGame is GLXLifecycle{
         //更新本局状态
         isGameResultOpen = true;
 
+        emit UpdateGameResult();
+
         return true;
     }
 
@@ -331,6 +346,8 @@ contract GLXGame is GLXLifecycle{
 
         //更新本局状态
         isGameResultOpen = true;
+
+        emit UpdateGameResultByOracle(_gameResult);
 
         return true;
     }

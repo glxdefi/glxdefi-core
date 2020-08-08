@@ -1,10 +1,8 @@
 pragma solidity ^0.6.0;
 
+//游戏接口层
 interface IGLXGame {
 
-    event Initialize(address _router, address _token);
-    event Bet(address account, bool direction, uint256 amount);
-    event Receive(address account);
 
     // 初始化
     function initialize(address _router, address _extToken,address intToken, address _finToken, uint _startBlockNumber, uint _endBlockNumber, bool _isOnChainGame, address _gameObjectToken,uint256 _gameObjectTokenSupply)  external;
@@ -27,5 +25,6 @@ interface IGLXGame {
     //查看自己是否拥有需要提取的收益
     function isExistIncomeNeedReceive() external view returns (bool);
 
+    //查看当前已经有多少人员押注
     function getCurUserCount() external view returns (uint);
 }
