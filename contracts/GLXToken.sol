@@ -34,17 +34,20 @@ contract GLXToken is ERC20 {
     function burn(uint256 amount) public {
         require(amount > 0, "GLXToken: AMOUNT_IS_ZERO");
 
-        //根据平台代币和DAI的比例，计算出amount数量的平台代币，可以换多少DAI
-        uint256 swapAmount = _calSwapAmount(amount);
-        require(swapAmount > 0, "GLXToken: SWAP_AMOUNT_IS_ZERO");
-
         _burn(msg.sender, amount);
+
+        //根据平台代币和DAI的比例，计算出amount数量的平台代币，可以换多少DAI
+        uint256 swapOutAmount = _calSwapAmount(amount);
+        require(swapOutAmount > 0, "GLXToken: SWAP_AMOUNT_IS_ZERO");
+
         IERC20 dai = IERC20(extToken);
-        dai.transfer(msg.sender, swapAmount);
+        dai.transfer(msg.sender, swapOutAmount);
     }
 
     function _calSwapAmount(uint256 amount) private view returns (uint256) {
         IERC20 dai = IERC20(extToken);
-        return dai.balanceOf(msg.sender).mul(amount).div(totalSupply());
+        uint256 extTokenAmountOfPool = dai.balanceOf(address(this));
+        uint256 swapOutAmount = extTokenAmountOfPool.mul(amount).div(totalSupply());
+        return swapOutAmount;
     }
 }
