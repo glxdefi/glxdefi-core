@@ -60,7 +60,6 @@ contract GLXRouter is Ownable {
     function _mint(address game, address intToken, uint256 amount) internal returns (bool) {
         //获取当前是参与序列好
         uint256 curUserCount = IGLXGame(game).getCurUserCount();
-        require(curUserCount > 0, 'GLXRouter: CUR_USER_COUNT_IS_ZERO');
 
         uint256 discount = IGLXFactory(factory).getMintDiscount(intToken);
         //同样的押注资金：在同一个epoch中，越早押注铸币越多。在不同epoch中，同一个押注次序，早期的epoch会收获更多的代币
