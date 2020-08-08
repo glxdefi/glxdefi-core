@@ -67,11 +67,11 @@ contract GLXGame is GLXLifecycle{
     //押注资金最大额度的用户地址
     address public maxAmountAccount;
 
-    //利息总收入
+    //compound 利息总收入
     uint256 public interestIncome;
-    //股东收益
+    //股东总收益3%
     uint256 public shareHolderProfit;
-    //赢方收益：falseTotalAmount - shareHolderProfit 或者 trueTotalAmount - shareHolderProfit
+    //赢方收益97%：falseTotalAmount - shareHolderProfit 或者 trueTotalAmount - shareHolderProfit
     uint256 public winPrincipalProfit;
 
     //防止重入攻击
@@ -380,10 +380,6 @@ contract GLXGame is GLXLifecycle{
         return true;
     }
 
-    //获取利率
-    function getApr() external whenEnded returns (uint256) {
-        return CompoundHelper.exchangeRate(finToken);
-    }
 
     //获取总参加人数
     function getCurUserCount() external view returns (uint256) {
