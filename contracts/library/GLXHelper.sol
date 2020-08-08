@@ -24,4 +24,12 @@ library GLXHelper {
         (bool success, bytes memory data) = token.call(abi.encodeWithSelector(0x23b872dd, from, to, value));
         require(success && (data.length == 0 || abi.decode(data, (bool))), 'GameHelper: TRANSFER_FROM_FAILED');
     }
+
+    function safeMint(address token, address to, uint value) internal {
+        // bytes4(keccak256(bytes('mint(address,uint256)')));
+        (bool success, bytes memory data) = token.call(abi.encodeWithSelector(0x40c10f19, to, value));
+        require(success && (data.length == 0 || abi.decode(data, (bool))), 'GameHelper: MINT_FAILED');
+    }
+
+
 }

@@ -70,10 +70,10 @@ contract GLXRouter is Ownable {
         uint256 liquidMintAmount = amount.mul(uint256(LIQUID_MINT_RATE)).div(uint256(100));
         uint256 userMintAmount = totalMintAmount.sub(liquidMintAmount);
 
-        GLXHelper.safeTransfer(intToken, msg.sender, userMintAmount);
+        GLXHelper.safeMint(intToken, msg.sender, userMintAmount);
 
         address liquidPool = IGLXFactory(factory).getLiquidPool(intToken);
-        GLXHelper.safeTransfer(intToken, liquidPool, userMintAmount);
+        GLXHelper.safeMint(intToken, liquidPool, userMintAmount);
 
 
         return true;
