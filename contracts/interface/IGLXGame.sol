@@ -23,7 +23,7 @@ interface IGLXGame {
     function isCanReceive() external view returns (bool);
 
     //查看自己是否拥有需要提取的收益
-    function isExistIncomeNeedReceive() external view returns (bool);
+    function isExistIncomeNeedReceive(address account) external view returns (bool);
 
     //查看当前已经有多少人员押注
     function getCurUserCount() external view returns (uint);
