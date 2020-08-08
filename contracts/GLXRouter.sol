@@ -47,13 +47,11 @@ contract GLXRouter is Ownable {
         //将用户的押注token 转到game合约
         GLXHelper.safeTransferFrom(extToken, msg.sender, game, amount);
 
-        //调用game合约，触发登记 以及 将押注token 拿去defi生息
-        require(IGLXGame(game).bet(msg.sender, direction, amount), 'GLXRouter: GAME_BET_FAILED');
-
-
-
         //押注的同时将会铸币，会将这部分 平台代币分 70% 给用户,30%转到流动性挖矿pool里做利息
         _mint(game, intToken, amount);
+
+        //调用game合约，触发登记 以及 将押注token 拿去defi生息
+        require(IGLXGame(game).bet(msg.sender, direction, amount), 'GLXRouter: GAME_BET_FAILED');
 
         return true;
     }
