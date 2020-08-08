@@ -49,12 +49,21 @@ contract('Game', function (accounts) {
     })
     it('should run game', async function() {
         // 准备dai
-        await this.dai.transfer(player1, ZWeb3.web3.utils.toWei('100','ether'))
-        const player1DaiBalance = await this.dai.balanceOf.call(player1)
+        let player1DaiBalance = ZWeb3.web3.utils.toWei('100','ether')
+        await this.dai.transfer(player1, player1DaiBalance)
+        player1DaiBalance = await this.dai.balanceOf.call(player1)
         expect(ZWeb3.web3.utils.fromWei(player1DaiBalance, 'ether')).equal('100')
 
-        //下注
-        await this.router.bet(this.game.address, false, ZWeb3.web3.utils.toWei('1','ether'))
+        //下注 - app
+        const betDaiAmount = ZWeb3.web3.utils.toWei('1','ether')
+        await this.dai.approve(this.router.address, betDaiAmount, {from: player1})
+        // await this.dai.approve(this.router.address, betDaiAmount).send({from: player1})
+        await this.router.bet(this.game.address, false, betDaiAmount, {from: player1})
+        player1DaiBalance = await this.dai.balanceOf.call(player1)
+        expect(ZWeb3.web3.utils.fromWei(player1DaiBalance, 'ether')).equal('99')
+
+
+
     })
 
 })

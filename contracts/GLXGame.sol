@@ -99,7 +99,7 @@ contract GLXGame is GLXLifecycle{
 
     //防止重入攻击
     modifier lock() {
-        require(unlocked == 1, 'GLXGame: LOCKED');
+        require(unlocked == 0, 'GLXGame: LOCKED');
         unlocked = 0;
         _;
         unlocked = 1;
