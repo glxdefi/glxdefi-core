@@ -25,6 +25,7 @@ contract GLXRouter is Ownable {
         factory = _factory;
     }
 
+    //校验游戏地址是否合法
     modifier validGame(address game) {
         require(game != address(0), 'GLXRouter: GAME_INVALID');
         require(IGLXFactory(factory).getGameExtToken(game) != address(0), 'GLXRouter: GAME_NOT_EXIST');
@@ -68,8 +69,10 @@ contract GLXRouter is Ownable {
         uint256 liquidMintAmount = totalMintAmount.mul(uint256(LIQUID_MINT_RATE)).div(uint256(100));
         uint256 userMintAmount = totalMintAmount.sub(liquidMintAmount);
 
+        //为股东铸币
         GLXHelper.safeMint(intToken, msg.sender, userMintAmount);
 
+        //为流动性池子铸币
         address liquidPool = IGLXFactory(factory).getLiquidPool(intToken);
         GLXHelper.safeMint(intToken, liquidPool, liquidMintAmount);
 
@@ -91,7 +94,6 @@ contract GLXRouter is Ownable {
 
         return true;
     }
-    //当对赌的标的 是链下数据，需要oracle喂结果
 
     //当对赌的标的 是链下数据，需要oracle喂结果;防止缺省值影响，2代表true正方赢， 1代表false 反方赢，
     function updateGameResultByOracle(address game, uint8 gameResult) external onlyOwner validGame(game) returns (bool) {
