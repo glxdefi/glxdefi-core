@@ -91,7 +91,7 @@ contract GLXRouter is Ownable {
     //当对赌的标的 是链下数据，需要oracle喂结果
 
     //当对赌的标的 是链下数据，需要oracle喂结果;防止缺省值影响，2代表true正方赢， 1代表false 反方赢，
-    function updateGameResultByOracle(address game,uint8 gameResult) external onlyOwner validGame(game) returns (bool) {
+    function updateGameResultByOracle(address game, uint8 gameResult) external onlyOwner validGame(game) returns (bool) {
 
         require(IGLXGame(game).updateGameResultByOracle(gameResult), 'GLXRouter: GAME_ORACLE_FAILED');
 

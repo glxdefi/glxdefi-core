@@ -259,6 +259,23 @@ contract GLXGame is GLXLifecycle{
         GLXHelper.safeTransfer(extToken, intToken, shareHolderProfit);
     }
 
+    //清算各方收益:包括赢家，持有平台币的股东，以及本局最大投注人收益
+    function _clearProfit() private {
+
+        uint256 totalAmount = CompoundHelper.redeem(extToken,  finToken);
+        uint256 initAmount = trueTotalAmount.add(falseTotalAmount);
+
+        require(totalAmount < initAmount, "GLXGame: FIN_INCOME_INVALID");
+
+        interestIncome = totalAmount.sub(initAmount);
+
+
+        //将平台抽成赚到全部收益 分给持有平台币的股东，股东可将平台代币burn掉的时候，就会收到股东权益
+        _transferProfit2ShareHolder();
+
+
+    }
+
     //当对赌的标的 是链上数据，需要触发开奖,谁都可以来开奖
     function updateGameResult() external lock whenEnded returns (bool) {
 
@@ -272,17 +289,10 @@ contract GLXGame is GLXLifecycle{
             gameResult = false;
         }
 
-        uint256 totalAmount = CompoundHelper.redeem(extToken,  finToken);
-        uint256 initAmount = trueTotalAmount.add(falseTotalAmount);
+        //清算各方收益
+        _clearProfit();
 
-        require(totalAmount < initAmount, "GLXGame: FIN_INCOME_INVALID");
-
-        interestIncome = totalAmount.sub(initAmount);
-
-
-        //将平台抽成赚到全部收益 分给持有平台币的股东，股东可将平台代币burn掉的时候，就会收到股东权益
-        _transferProfit2ShareHolder();
-
+        //更新本局状态
         isGameResultOpen = true;
 
         return true;
@@ -305,6 +315,10 @@ contract GLXGame is GLXLifecycle{
             gameResult = true;
         }
 
+        //清算各方收益
+        _clearProfit();
+
+        //更新本局状态
         isGameResultOpen = true;
 
         return true;
