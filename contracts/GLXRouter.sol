@@ -83,7 +83,7 @@ contract GLXRouter is Ownable {
     }
 
     //当对赌的标的 是链上数据，需要触发开奖
-    function updateGameResult(address game) external onlyOwner validGame(game) returns (bool) {
+    function updateGameResult(address game) external validGame(game) returns (bool) {
         require(IGLXGame(game).updateGameResult(), 'GLXRouter: GAME_UPDATE_RESULT_FAILED');
 
         return true;

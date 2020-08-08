@@ -281,7 +281,7 @@ contract GLXGame is GLXLifecycle{
 
         //押注链上数据 需要oracle结果
         require(isOnChainGame, "GLXGame: NOT_ON_CHAIN_GAME");
-        require(!isGameResultOpen, "GLXGame: ALREADY_ORACLED");
+        require(!isGameResultOpen, "GLXGame: GAME_RESULT_ALREADY_OPEN");
 
         if (IERC20(gameObjectToken).totalSupply() >= gameObjectTokenSupply) {
             gameResult = true;
@@ -305,7 +305,7 @@ contract GLXGame is GLXLifecycle{
 
         //押注链下数据 需要oracle结果
         require(!isOnChainGame, "GLXGame: NOT_OFF_CHAIN_GAME");
-        require(!isGameResultOpen, "GLXGame: ALREADY_ORACLED");
+        require(!isGameResultOpen, "GLXGame: GAME_RESULT_ALREADY_ORACLED");
         require(_gameResult == 1 ||  _gameResult == 2, "GLXGame: gameResult不合法");
 
 
