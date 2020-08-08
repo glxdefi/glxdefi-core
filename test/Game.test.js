@@ -18,7 +18,11 @@ const { expect } = require('chai');
 
 contract('Game', function (accounts) {
 
-    const [sender, player1] =  accounts;
+    const [sender, liquidPool, player1] =  accounts;
+
+    console.log('sender: ' + sender)
+    console.log('liquidPool: ' + liquidPool)
+    console.log('player1: ' + player1)
 
     beforeEach(async function() {
         //合约实例
@@ -27,23 +31,24 @@ contract('Game', function (accounts) {
         this.cdai = await MockCErc20.deployed()
         this.router = await GLXRouter.deployed()
         this.gLXFactory = await GLXFactory.deployed()
-        // console.log('factory: ' + this.gLXFactory.address)
-        // console.log('router: ' + this.router.address)
-        // console.log('cdai: ' + this.cdai.address)
-        // console.log('hope: ' + this.hope.address)
-        // console.log('dai: ' + this.dai.address)
+        console.log('factory: ' + this.gLXFactory.address)
+        console.log('router: ' + this.router.address)
+        console.log('cdai: ' + this.cdai.address)
+        console.log('hope: ' + this.hope.address)
+        console.log('dai: ' + this.dai.address)
     })
 
     it('should createGame', async function () {
 
         const result = await this.gLXFactory.createGame(this.router.address, this.dai.address, this.hope.address,
-            this.cdai.address, this.cdai.address, 10000, 10100, true, this.dai.address, 1000)
+            this.cdai.address, liquidPool, 10000, 10100, true, this.dai.address, 1000)
         const gameAddress = result.receipt.logs[0].args.a
 
         const gameExtToken = await this.gLXFactory.getGameExtToken.call(gameAddress)
         expect(gameExtToken).equal(this.dai.address);
 
         this.game = await GLXGame.at(gameAddress)
+        console.log('game: ' + this.game.address)
 
         expect(await this.game.factory.call()).equal(this.gLXFactory.address)
     })
@@ -56,8 +61,7 @@ contract('Game', function (accounts) {
 
         //下注 - app
         const betDaiAmount = ZWeb3.web3.utils.toWei('1','ether')
-        await this.dai.approve(this.router.address, betDaiAmount, {from: player1})
-        // await this.dai.approve(this.router.address, betDaiAmount).send({from: player1})
+        await this.dai.approve(this.game.address, betDaiAmount, {from: player1})
         await this.router.bet(this.game.address, false, betDaiAmount, {from: player1})
         player1DaiBalance = await this.dai.balanceOf.call(player1)
         expect(ZWeb3.web3.utils.fromWei(player1DaiBalance, 'ether')).equal('99')

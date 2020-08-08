@@ -22,9 +22,7 @@ library CompoundHelper {
 
         underlying.approve(receiver, amount);
 
-        if (cToken.mint(amount) != 0) {
-            revert();
-        }
+        require(cToken.mint(amount) == 0, "mint failed");
         return true;
     }
 
