@@ -9,6 +9,7 @@ import "./interface/IGLXGame.sol";
 import "./library/GLXHelper.sol";
 
 //router合约：主要功能是作为游戏的入口
+//此处合约owner只能用户oracle喂数据，不能修改游戏逻辑
 contract GLXRouter is Ownable {
 
     using SafeMath for uint256;

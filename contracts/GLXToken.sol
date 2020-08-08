@@ -5,6 +5,7 @@ import "@openzeppelin/contracts/token/ERC20/ERC20.sol";
 import "@openzeppelin/contracts/token/ERC20/IERC20.sol";
 
 //DAI对应的平台代币,没有owner，平台资金全部归属股东
+//为了公信力，废弃owner角色
 contract GLXToken is ERC20 {
 
     //router地址

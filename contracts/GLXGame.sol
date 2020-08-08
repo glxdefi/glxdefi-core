@@ -10,6 +10,7 @@ import "./library/CompoundHelper.sol";
 
 
 //game合约：游戏实例，可以同时创建不同代币参与，以及不同时间维度和不同对赌标的的游戏
+//为了公信力，废弃owner角色
 contract GLXGame is GLXLifecycle{
 
     using SafeMath for uint256;

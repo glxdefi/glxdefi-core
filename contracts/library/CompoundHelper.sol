@@ -15,14 +15,14 @@ library CompoundHelper {
     //receiver: compound的接收合约地址  和token是一一对应的 cerc20
     //amount: 数量
     function supply(address token, address receiver, uint256 amount) public returns (bool) {
-        require(amount > 0);
+        require(amount > 0, "CompoundHelper: AMOUNT_IS_ZERO");
 
         IERC20 underlying = IERC20(token);
         ICErc20 cToken = ICErc20(receiver);
 
         underlying.approve(receiver, amount);
 
-        require(cToken.mint(amount) == 0, "mint failed");
+        require(cToken.mint(amount) == 0, "CompoundHelper: C_TOKEN_MINT_FAILED");
         return true;
     }
 
@@ -34,7 +34,7 @@ library CompoundHelper {
         IERC20 underlying = IERC20(token);
         ICErc20 cToken = ICErc20(from);
         uint256 amount = cToken.balanceOf(from);
-        require(cToken.redeem(amount) == 0, "redeem failed");
+        require(cToken.redeem(amount) == 0, "CompoundHelper: REDEEM_RESULT_FAILED");
 
         return underlying.balanceOf(address(this));
     }
