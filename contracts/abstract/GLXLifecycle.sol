@@ -6,9 +6,9 @@ import "@openzeppelin/contracts/GSN/Context.sol";
 
  contract GLXLifecycle is Context {
 
-    uint private startBlockNumber;
+    uint public startBlockNumber;
 
-    uint private endBlockNumber;
+    uint public endBlockNumber;
 
 
     function _initBlockNumber(uint _startBlockNumber, uint _endBlockNumber)  internal  {
