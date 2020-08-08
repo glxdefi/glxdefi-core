@@ -31,11 +31,14 @@ library CompoundHelper {
     //from: compound的合约地址  和token是一一对应的 cerc20
     //返回赎回的token数量
     function redeem(address token, address from) public returns (uint256) {
-        IERC20 underlying = IERC20(token);
         ICErc20 cToken = ICErc20(from);
-        uint256 amount = cToken.balanceOf(from);
+
+        //查询game持有cDAI的数量
+        uint256 amount = cToken.balanceOf(address(this));
         require(cToken.redeem(amount) == 0, "CompoundHelper: REDEEM_RESULT_FAILED");
 
+        //查询game持有DAI的数量
+        IERC20 underlying = IERC20(token);
         return underlying.balanceOf(address(this));
     }
 
