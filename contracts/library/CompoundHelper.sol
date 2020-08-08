@@ -34,9 +34,7 @@ library CompoundHelper {
         IERC20 underlying = IERC20(token);
         ICErc20 cToken = ICErc20(from);
         uint256 amount = cToken.balanceOf(from);
-        if (cToken.redeem(amount) != 0) {
-            revert();
-        }
+        require(cToken.redeem(amount) == 0, "redeem failed");
 
         return underlying.balanceOf(address(this));
     }
