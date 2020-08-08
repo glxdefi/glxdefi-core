@@ -14,7 +14,7 @@ module.exports = {
       host: "localhost",
       port: 7545,
       network_id: "*",
-      gas: 100000000,
+      gas: 8000000,
     },
     ropsten: {
       provider: () => new HDWalletProvider(process.env.DEV_MNEMONIC, "http://parity.test.finance.sparkpool.com:18545"),

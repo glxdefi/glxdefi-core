@@ -64,7 +64,7 @@ contract GLXFactory is Ownable {
 
         //创建游戏合约
         bytes memory bytecode = type(GLXGame).creationCode;
-        bytes32 salt = keccak256(abi.encodePacked(extToken));
+        bytes32 salt = keccak256(abi.encodePacked(startBlockNumber));
         assembly {
             game := create2(0, add(bytecode, 32), mload(bytecode), salt)
         }
