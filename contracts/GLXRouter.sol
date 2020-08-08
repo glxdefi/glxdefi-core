@@ -12,6 +12,10 @@ contract GLXRouter is Ownable {
 
     using SafeMath for uint256;
 
+
+    //代币铸币的时候其中多少比例放到流动性挖矿池子中提供利息，默认30%个点，其余70%直接发给平台股东
+    uint256 public constant LIQUID_MINT_RATE = 70;
+
     address public factory;
 
 
@@ -60,10 +64,11 @@ contract GLXRouter is Ownable {
         uint256 curUserCount = IGLXGame(game).getCurUserCount();
         require(curUserCount > 0, 'GLXRouter: CUR_USER_COUNT_IS_ZERO');
 
-
-        uint256 totalMintAmount = amount.div( (uint256(1).add(curUserCount.div(uint256(10))) ));
-        uint256 userMintAmount = amount.mul(uint256(70));
-        uint256 liquidMintAmount = totalMintAmount.sub(userMintAmount);
+        uint256 discount = IGLXFactory(factory).getMintDiscount(intToken);
+        //同样的押注资金：在同一个epoch中，越早押注铸币越多。在不同epoch中，同一个押注次序，早期的epoch会收获更多的代币
+        uint256 totalMintAmount = amount.div( (uint256(1).add(curUserCount.div(uint256(10))) )).mul(uint256(100)).div(discount);
+        uint256 liquidMintAmount = amount.mul(uint256(LIQUID_MINT_RATE)).div(uint256(100));
+        uint256 userMintAmount = totalMintAmount.sub(liquidMintAmount);
 
         GLXHelper.safeTransfer(intToken, msg.sender, userMintAmount);
 

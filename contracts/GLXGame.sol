@@ -14,6 +14,9 @@ contract GLXGame is GLXLifecycle{
 
     using SafeMath for uint256;
 
+    //股东抽成抽成比例，默认3%个点
+    uint public constant SHARE_HOLDER_RAKE_RATE = 3;
+
     address public factory;
     address public router;
     address public extToken;
@@ -249,11 +252,11 @@ contract GLXGame is GLXLifecycle{
     //将平台抽成赚到全部收益 分给持有平台币的股东
     function _transferProfit2ShareHolder() private {
         if (gameResult) {
-            shareHolderProfit = falseTotalAmount.mul(uint256(3)).div(uint256(100));
+            shareHolderProfit = falseTotalAmount.mul(SHARE_HOLDER_RAKE_RATE).div(uint256(100));
             //一次性算出来之后，在提取收益的时候就不用重复去算了
             winPrincipalProfit = falseTotalAmount.sub(shareHolderProfit);
         } else {
-            shareHolderProfit = trueTotalAmount.mul(uint256(3)).div(uint256(100));
+            shareHolderProfit = trueTotalAmount.mul(SHARE_HOLDER_RAKE_RATE).div(uint256(100));
             winPrincipalProfit = trueTotalAmount.sub(shareHolderProfit);
         }
         GLXHelper.safeTransfer(extToken, intToken, shareHolderProfit);

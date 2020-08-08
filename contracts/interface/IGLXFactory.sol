@@ -24,4 +24,10 @@ interface IGLXFactory {
     function getGameExtToken(address game) external view returns (address extToken);
 
     function getLiquidPool(address intToken) external view returns (address liquidPool);
+
+    function getMintDiscount(address intToken) external view returns (uint256 mintDiscount);
+
+
+    //设置epoch减半率
+    function setMintDiscount(address intToken, uint256 mintDiscount) external returns (bool);
 }
