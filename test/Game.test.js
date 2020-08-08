@@ -61,7 +61,7 @@ contract('Game', function (accounts) {
 
         //下注 - app
         const betDaiAmount = ZWeb3.web3.utils.toWei('1','ether')
-        await this.dai.approve(this.game.address, betDaiAmount, {from: player1})
+        await this.dai.approve(this.router.address, betDaiAmount, {from: player1})
         await this.router.bet(this.game.address, false, betDaiAmount, {from: player1})
         player1DaiBalance = await this.dai.balanceOf.call(player1)
         expect(ZWeb3.web3.utils.fromWei(player1DaiBalance, 'ether')).equal('99')

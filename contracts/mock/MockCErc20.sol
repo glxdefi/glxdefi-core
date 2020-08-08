@@ -14,7 +14,7 @@ contract MockCErc20 is Ownable {
 
     address public erc20Address;
 
-    function setTokenAddress(address _erc20Address) external onlyOwner {
+    constructor(address _erc20Address) public {
         require(address(_erc20Address) != address(0));
         erc20Address = _erc20Address;
     }
