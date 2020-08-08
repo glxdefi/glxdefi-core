@@ -19,8 +19,12 @@ contract GLXGame is GLXLifecycle{
 
     address public factory;
     address public router;
+
+    //押注的token
     address public extToken;
+    //内部股东权益token
     address public intToken;
+    //理财合约地址token
     address public finToken;
 
 
@@ -55,7 +59,9 @@ contract GLXGame is GLXLifecycle{
     //领奖状态：false表示未领取，true表示已经领取
     mapping (address => bool) public isReceivedMap;
 
+    //押注资金最大额度
     uint256 public maxAmount;
+    //押注资金最大额度的用户地址
     address public maxAmountAccount;
 
     //利息总收入
@@ -65,8 +71,9 @@ contract GLXGame is GLXLifecycle{
     //赢方收益：falseTotalAmount - shareHolderProfit 或者 trueTotalAmount - shareHolderProfit
     uint256 public winPrincipalProfit;
 
-
+    //防止重入攻击
     uint8 private unlocked = 1;
+
     constructor() public {
         factory = msg.sender;
     }
@@ -146,6 +153,7 @@ contract GLXGame is GLXLifecycle{
 
 
 
+    //是否可以领取收益了
     function isCanReceive() public view returns (bool) {
         if (!isEnded()) {
             return false;
@@ -160,8 +168,8 @@ contract GLXGame is GLXLifecycle{
 
 
 
-    //查看是否拥有需要提取的收益
-    function isExistBonusNeedReceive() public view returns (bool) {
+    //查看自己是否拥有需要提取的收益
+    function isExistIncomeNeedReceive() external view returns (bool) {
         if (!isCanReceive()) {
             return false;
         }
@@ -181,7 +189,7 @@ contract GLXGame is GLXLifecycle{
         return false;
     }
 
-
+    // 押注
     function bet(address account, bool direction, uint256 amount) external lock whenNotStarted onlyRouter returns (bool) {
         require(account != address(0), "GLXGame: BET_ADDRESS_ZERO");
         require(amount > 0, "GLXGame: BET_AMOUNT_ZERO");
@@ -212,7 +220,7 @@ contract GLXGame is GLXLifecycle{
     }
 
     //领取收益
-    function getIncome(address _account) external lock whenCanReceive returns (bool) {
+    function receiveIncome(address _account) external lock whenCanReceive returns (bool) {
         require(_account != address(0), "GLXGame: RECEIVE_ADDRESS_ZERO");
         require(!isReceivedMap[_account], "GLXGame: RECEIVED");
 

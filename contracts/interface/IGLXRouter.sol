@@ -6,7 +6,7 @@ interface IGLXRouter {
     function bet(address game, bool direction, uint256 amount) external returns (bool);
 
     // 用户领奖领奖：减少平台发奖成本开销
-    function getIncome(address game) external returns (bool);
+    function receiveIncome(address game) external returns (bool);
 
     //当对赌的标的 是链上数据，需要触发开奖
     function updateGameResult(address game) external returns (bool);

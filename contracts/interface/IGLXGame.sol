@@ -13,7 +13,7 @@ interface IGLXGame {
     function bet(address account, bool direction, uint256 amount) external returns (bool);
 
     // 获取收益
-    function getIncome(address account) external returns (bool);
+    function receiveIncome(address account) external returns (bool);
 
     //当对赌的标的 是链上数据，需要触发开奖,谁都可以来开奖
     function updateGameResult() external returns (bool);
@@ -24,8 +24,8 @@ interface IGLXGame {
     //是否可以提取游戏奖品了
     function isCanReceive() external view returns (bool);
 
-    //查看是否拥有需要提取的奖品
-    function isExistBonusNeedReceive() external view returns (bool);
+    //查看自己是否拥有需要提取的收益
+    function isExistIncomeNeedReceive() external view returns (bool);
 
     function getCurUserCount() external view returns (uint);
 }

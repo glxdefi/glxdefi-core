@@ -70,16 +70,16 @@ contract GLXRouter is Ownable {
         GLXHelper.safeMint(intToken, msg.sender, userMintAmount);
 
         address liquidPool = IGLXFactory(factory).getLiquidPool(intToken);
-        GLXHelper.safeMint(intToken, liquidPool, userMintAmount);
+        GLXHelper.safeMint(intToken, liquidPool, liquidMintAmount);
 
 
         return true;
     }
 
     // 用户自行领奖：减少平台发奖成本开销
-    function getIncome(address game) external validGame(game) returns (bool) {
+    function receiveIncome(address game) external validGame(game) returns (bool) {
 
-        require(IGLXGame(game).getIncome(msg.sender), 'GLXRouter: GAME_RECEIVE_FAILED');
+        require(IGLXGame(game).receiveIncome(msg.sender), 'GLXRouter: GAME_RECEIVE_FAILED');
 
         return true;
     }

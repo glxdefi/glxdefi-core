@@ -10,7 +10,7 @@ contract MockCErc20 is Ownable {
 
     mapping (address => uint256) public balanceOf;
 
-    uint private ratio = 3 * 1e17;
+    uint256 private ratio = 3;
 
     address public erc20Address;
 
@@ -36,25 +36,25 @@ contract MockCErc20 is Ownable {
         return ratio;
     }
 
-    function supplyRatePerBlock() external view returns (uint256){
+    function supplyRatePerBlock() external pure  returns (uint256){
         return uint256(0);
     }
 
-    function redeem(uint256 _amount) external returns (uint){
+    function redeem(uint256 _amount) external returns (uint256){
         require(_amount > 0);
         require(balanceOf[msg.sender] >= _amount);
         return redeemInternal(_amount);
     }
 
     function redeemInternal(uint256 redeemAmount) internal returns (uint256){
-        uint256 redeemTotal = redeemAmount.add(redeemAmount.mul(ratio).div(1e18));
+        uint256 redeemTotal = redeemAmount.add(redeemAmount.mul(ratio).div(10));
         IERC20 underlying = IERC20(erc20Address);
         underlying.transfer(msg.sender, redeemTotal);
         balanceOf[msg.sender] -= redeemAmount;
         return uint256(0);
     }
 
-    function redeemUnderlying(uint256 amount) external returns (uint256){
+    function redeemUnderlying(uint256 amount) external pure returns (uint256){
         require(amount > 0, "MockCErc20 : AMOUNT_IS_ZERO");
         return uint256(0);
     }

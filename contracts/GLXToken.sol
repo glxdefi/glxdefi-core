@@ -32,7 +32,7 @@ contract GLXToken is Ownable, ERC20 {
     function burn(uint256 amount) public {
         require(amount > 0, "GLXToken: AMOUNT_IS_ZERO");
 
-        uint256 swapAmount = calSwapAmount(amount);
+        uint256 swapAmount = _calSwapAmount(amount);
         require(swapAmount > 0, "GLXToken: SWAP_AMOUNT_IS_ZERO");
 
         _burn(msg.sender, amount);
@@ -40,7 +40,7 @@ contract GLXToken is Ownable, ERC20 {
         dai.transfer(msg.sender, swapAmount);
     }
 
-    function calSwapAmount(uint256 amount) internal returns (uint256) {
+    function _calSwapAmount(uint256 amount) private view returns (uint256) {
         IERC20 dai = IERC20(extToken);
         return dai.balanceOf(msg.sender).mul(amount).div(totalSupply());
     }
