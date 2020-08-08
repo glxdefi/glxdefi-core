@@ -22,7 +22,7 @@ interface IGLXGame {
     //是否可以提取游戏奖品了
     function isCanReceive() external view returns (bool);
 
-    //查看自己是否拥有需要提取的收益
+    //查看自己是否有需要提取的收益
     function isExistIncomeNeedReceive(address account) external view returns (bool);
 
     //查看自己本场的收益额度，即使领取过了，也可以查
