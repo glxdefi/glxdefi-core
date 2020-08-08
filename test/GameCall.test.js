@@ -46,6 +46,6 @@ contract('Game', function (accounts) {
         // await this.router.bet(this.game.address, true, betDaiAmount)
     })
     it('should receive', async function () {
-        await this.router.getIncome(this.game.address)
+        await this.router.receiveIncome(this.game.address)
     })
 })
