@@ -14,10 +14,10 @@ module.exports = async function (deployer) {
   const mockErc20 = await deployer.deploy(MockErc20, ZWeb3.web3.utils.toWei('1000000000000','ether'));
   await deployer.deploy(MockCErc20, MockErc20.address);
   await deployer.deploy(GLXToken, GLXRouter.address, MockErc20.address);
-  const result = await gLXFactory.createGame(GLXRouter.address, MockErc20.address, GLXToken.address,
-      MockCErc20.address, '0x18617b737032741B50D0f47e0Ad66ab3cBC94f6d', 8457100, 8457200, true, GLXToken.address, 1000)
-  const gameAddress = result.receipt.logs[0].args.a
-  console.log('gameAddress: ' + gameAddress)
+  // const result = await gLXFactory.createGame(GLXRouter.address, MockErc20.address, GLXToken.address,
+  //     MockCErc20.address, '0x18617b737032741B50D0f47e0Ad66ab3cBC94f6d', 8457100, 8457200, true, GLXToken.address, 1000)
+  // const gameAddress = result.receipt.logs[0].args.a
+  // console.log('gameAddress: ' + gameAddress)
   //cdai充值dai
   await mockErc20.transfer(MockCErc20.address, ZWeb3.web3.utils.toWei('100000000','ether'))
 };

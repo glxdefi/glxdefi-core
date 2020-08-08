@@ -26,10 +26,10 @@ contract('Game', function (accounts) {
 
     beforeEach(async function() {
         //合约实例
-        this.gLXFactory = await GLXFactory.at('0x3D78d80Ebddef4bBfEa95211Bb09C628b5f6BfC8')
-        this.router = await GLXRouter.at('0x6E4A62f2ddc3350031A6C1FAbF5E5456C2766955')
-        this.game = await GLXGame.at('0xf7888E1A137Bd58eb7d022572b2708A3cE743319')
-        this.dai = await MockErc20.at('0xED60D292438fDE4733e6DfB166A196e9e8443642')
+        this.gLXFactory = await GLXFactory.at('0x51560f4D00e06F0A9a55bFC1f967d07B9B03d5e8')
+        this.router = await GLXRouter.at('0xE7744Fb425408a6eFB4642839B86391b66753a00')
+        this.game = await GLXGame.at('0x8E18a23e59aa42e9485754F78D39698A1E9df716')
+        this.dai = await MockErc20.at('0x0062B12cE40f1CfF829aA7c3759872Bad65176e5')
     })
 
     it('should createGame', async function () {
@@ -41,11 +41,11 @@ contract('Game', function (accounts) {
         // console.log(gameAddress)
     })
     it('should bet', async function () {
-        // const betDaiAmount = ZWeb3.web3.utils.toWei('10','ether')
-        // await this.dai.approve(this.router.address, betDaiAmount)
-        // await this.router.bet(this.game.address, true, betDaiAmount)
+        const betDaiAmount = ZWeb3.web3.utils.toWei('10','ether')
+        await this.dai.approve(this.router.address, betDaiAmount)
+        await this.router.bet(this.game.address, true, betDaiAmount)
     })
     it('should receive', async function () {
-        await this.router.receiveIncome(this.game.address)
+        // await this.router.receiveIncome(this.game.address)
     })
 })
