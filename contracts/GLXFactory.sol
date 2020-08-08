@@ -23,7 +23,7 @@ contract GLXFactory is Ownable {
         address finToken,
         address liquidPool,
         uint startBlockNumber,
-        uint endBLockNumber,
+        uint endBlockNumber,
         bool isOnChainGame,
         address gameObjectToken,
         uint256 gameObjectTokenSupply
@@ -32,7 +32,7 @@ contract GLXFactory is Ownable {
         require(extToken != address(0), 'GLXFactory: TOKEN_INVALID');
         require(intToken != address(0), 'GLXFactory: TOKEN_INVALID');
 
-        game = _createGame(router, extToken, intToken, finToken, startBlockNumber, endBLockNumber, isOnChainGame, gameObjectToken, gameObjectTokenSupply);
+        game = _createGame(router, extToken, intToken, finToken, startBlockNumber, endBlockNumber, isOnChainGame, gameObjectToken, gameObjectTokenSupply);
         getGameExtToken[game] = extToken;
 
         if (getIntToken[extToken] == address(0)) {
@@ -56,7 +56,7 @@ contract GLXFactory is Ownable {
         address intToken,
         address finToken,
         uint startBlockNumber,
-        uint endBLockNumber,
+        uint endBlockNumber,
         bool isOnChainGame,
         address gameObjectToken,
         uint256 gameObjectTokenSupply
@@ -70,7 +70,7 @@ contract GLXFactory is Ownable {
         }
 
         //初始化游戏合约参数
-        IGLXGame(game).initialize(router, extToken, intToken, finToken, startBlockNumber, endBLockNumber, isOnChainGame, gameObjectToken, gameObjectTokenSupply);
+        IGLXGame(game).initialize(router, extToken, intToken, finToken, startBlockNumber, endBlockNumber, isOnChainGame, gameObjectToken, gameObjectTokenSupply);
 
         return game;
     }

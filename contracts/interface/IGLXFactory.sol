@@ -15,7 +15,7 @@ interface IGLXFactory {
         address finToken,//defi生息地址
         address liquidPool,//流动性挖矿地址
         uint startBlockNumber,//游戏开始时间
-        uint endBLockNumber,//游戏开奖时间
+        uint endBlockNumber,//游戏开奖时间
         bool isOnChainGame,//是否是以链上数据来做对赌标的游戏
         address gameObjectToken,//当是链上标的地址
         uint256 gameObjectTokenSupply//标的数据指标值
