@@ -63,7 +63,7 @@ contract GLXGame is GLXLifecycle{
     uint256 public winPrincipalProfit;
 
 
-    uint8 private unlocked = 0;
+    uint8 private unlocked = 1;
     constructor() public {
         factory = msg.sender;
     }
@@ -99,7 +99,7 @@ contract GLXGame is GLXLifecycle{
 
     //防止重入攻击
     modifier lock() {
-        require(unlocked == 0, 'GLXGame: LOCKED');
+        require(unlocked == 1, 'GLXGame: LOCKED');
         unlocked = 0;
         _;
         unlocked = 1;
