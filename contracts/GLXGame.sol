@@ -217,7 +217,7 @@ contract GLXGame is GLXLifecycle{
         require(!isReceivedMap[_account], "GLXGame: RECEIVED");
 
         //押注链下数据 需要oracle结果
-        require(isGameResultOpen, "GLXGame: 还没有开奖");
+        require(isGameResultOpen, "GLXGame: GAME_NOT_START_GET_INCOME");
 
         require(trueTotalAmount != 0 || falseTotalAmount != 0, "GLXGame: NOBODY_BET");
 
