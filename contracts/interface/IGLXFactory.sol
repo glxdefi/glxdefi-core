@@ -4,7 +4,7 @@ pragma solidity ^0.6.0;
 interface IGLXFactory {
 
     //游戏创建事件
-    event GameCreated(address token, uint startBlockNumber, uint endBLockNumber, bool isOnChainGame);
+    event GameCreated(address token, uint startBlockNumber, uint endBlockNumber, bool isOnChainGame);
 
 
     //创建游戏
