@@ -24,15 +24,15 @@ contract GLXToken is Ownable, ERC20 {
         router = _router;
     }
 
-    function mint(address receiver, uint amount) public onlyRouter {
+    function mint(address receiver, uint256 amount) public onlyRouter {
         _mint(receiver, amount);
     }
 
 
-    function burn(uint amount) public {
+    function burn(uint256 amount) public {
         require(amount > 0, "GLXToken: AMOUNT_IS_ZERO");
 
-        uint swapAmount = calSwapAmount(amount);
+        uint256 swapAmount = calSwapAmount(amount);
         require(swapAmount > 0, "GLXToken: SWAP_AMOUNT_IS_ZERO");
 
         _burn(msg.sender, amount);
@@ -40,7 +40,7 @@ contract GLXToken is Ownable, ERC20 {
         dai.transfer(msg.sender, swapAmount);
     }
 
-    function calSwapAmount(uint amount) internal returns (uint) {
+    function calSwapAmount(uint256 amount) internal returns (uint256) {
         IERC20 dai = IERC20(extToken);
         return dai.balanceOf(msg.sender).mul(amount).div(totalSupply());
     }
