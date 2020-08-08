@@ -50,6 +50,9 @@ contract('Game', function (accounts) {
         this.game = await GLXGame.at(gameAddress)
         console.log('game: ' + this.game.address)
 
+        const gameApr = await this.game.getApr.call()
+        console.log(gameApr.toNumber())
+
         expect(await this.game.factory.call()).equal(this.gLXFactory.address)
     })
     it('should run game', async function() {
