@@ -15,8 +15,8 @@ contract GLXRouter is Ownable {
     using SafeMath for uint256;
 
 
-    //代币铸币的时候其中多少比例放到流动性挖矿池子中提供利息，默认30%个点，其余70%直接发给平台股东
-    uint256 public constant LIQUID_MINT_RATE = 70;
+    //代币铸币的时候其中多少比例放到流动性挖矿池子中提供利息，默认60%个点，其余40%直接发给平台股东
+    uint256 public constant LIQUID_MINT_RATE = 60;
 
     //factory地址
     address public factory;
@@ -51,7 +51,7 @@ contract GLXRouter is Ownable {
         //将用户的押注token 转到game合约
         GLXHelper.safeTransferFrom(extToken, msg.sender, game, amount);
 
-        //押注的同时将会铸币，会将这部分 平台代币分 70% 给用户,30%转到流动性挖矿pool里做利息
+        //押注的同时将会铸币，会将这部分 平台代币分 40% 给用户,60%转到流动性挖矿pool里做利息
         _mint(game, intToken, amount);
 
         //调用game合约，触发登记 以及 将押注token 拿去defi生息
@@ -60,7 +60,7 @@ contract GLXRouter is Ownable {
         return true;
     }
 
-    //押注的同时将会铸币，会将这部分 平台代币分 70% 给用户,30%转到流动性挖矿pool里做利息
+    //押注的同时将会铸币，会将这部分 平台代币分 40% 给用户,60%转到流动性挖矿pool里做利息
     function _mint(address game, address intToken, uint256 amount) internal returns (bool) {
         //获取当前已经有多少人参与游戏
         uint256 curUserCount = IGLXGame(game).getCurUserCount();

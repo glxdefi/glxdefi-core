@@ -380,8 +380,54 @@ contract GLXGame is GLXLifecycle{
         return true;
     }
 
+    function getIncomeAmount(address _account) external view returns (uint256) {
+        require(_account != address(0), "GLXGame: RECEIVE_ADDRESS_ZERO");
 
-    //获取总参加人数
+        //押注链下数据 需要oracle结果
+        require(isGameResultOpen, "GLXGame: GAME_NOT_START_GET_INCOME");
+
+        uint256 receiveAmount = 0;
+
+        if ((trueTotalAmount == 0) && (falseTotalAmount != 0)) {
+            return receiveAmount;
+        }
+
+
+
+        //计算
+        if (gameResult) {
+            //正方赢
+            if (trueAmountMap[_account] > 0) {
+                //押中正方
+                receiveAmount = GLXHelper.calReceiveAmount(trueAmountMap[_account], trueTotalAmount, winPrincipalProfit);
+
+            } else if ((trueTotalAmount == 0) && (falseAmountMap[_account] > 0)) {
+                //正方赢，但是没人押正方，需要退还反方的97%本金
+                receiveAmount = GLXHelper.calReceiveAmount(falseAmountMap[_account], falseTotalAmount, winPrincipalProfit);
+            }
+
+        } else {
+            //反方赢
+            if (falseAmountMap[_account] > 0) {
+                //押中反方
+                receiveAmount = GLXHelper.calReceiveAmount(falseAmountMap[_account], falseTotalAmount, winPrincipalProfit);
+
+            } else if ((falseTotalAmount == 0) && (trueAmountMap[_account] > 0)) {
+                //反方赢，但是没人押反方，需要退还正方的97%本金
+                receiveAmount = GLXHelper.calReceiveAmount(trueAmountMap[_account], trueTotalAmount, winPrincipalProfit);
+            }
+        }
+
+        if (_account == maxAmountAccount) {
+            //如果是押注本金最大的，可以独享 全额利息收益
+            receiveAmount = receiveAmount.add(interestIncome);
+        }
+
+        return receiveAmount;
+
+    }
+
+        //获取总参加人数
     function getCurUserCount() external view returns (uint256) {
         return trueTotalCount.add(falseTotalCount);
     }

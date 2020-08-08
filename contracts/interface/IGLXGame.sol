@@ -25,6 +25,9 @@ interface IGLXGame {
     //查看自己是否拥有需要提取的收益
     function isExistIncomeNeedReceive(address account) external view returns (bool);
 
+    //查看自己本场的收益额度，即使领取过了，也可以查
+    function getIncomeAmount(address account) external view returns (uint256);
+
     //查看当前已经有多少人员押注
     function getCurUserCount() external view returns (uint);
 }
