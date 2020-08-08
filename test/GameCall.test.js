@@ -41,9 +41,11 @@ contract('Game', function (accounts) {
         // console.log(gameAddress)
     })
     it('should bet', async function () {
-        const betDaiAmount = ZWeb3.web3.utils.toWei('10','ether')
-        await this.dai.approve(this.router.address, betDaiAmount)
-        await this.router.bet(this.game.address, true, betDaiAmount)
+        // const betDaiAmount = ZWeb3.web3.utils.toWei('10','ether')
+        // await this.dai.approve(this.router.address, betDaiAmount)
+        // await this.router.bet(this.game.address, true, betDaiAmount)
     })
-
+    it('should receive', async function () {
+        await this.router.getIncome(this.game.address)
+    })
 })
