@@ -10,7 +10,8 @@
     "compile": "npx oz compile --solc-version=0.6.2 --optimizer on",
     "test": "truffle test",
     "ropsten": "npx truffle deploy --network ropsten --reset",
-    "goerli": "npx truffle deploy --network goerli --reset"
+    "goerli": "npx truffle deploy --network goerli --reset",
+    "local": "npx truffle deploy --network local --reset"
   },
   "author": "",
   "license": "ISC",

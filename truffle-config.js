@@ -16,6 +16,12 @@ module.exports = {
       network_id: "*",
       gas: 8000000,
     },
+    local: {
+      host: "localhost",
+      port: 7545,
+      network_id: "*",
+      gas: 8000000,
+    },
     ropsten: {
       provider: () => new HDWalletProvider(process.env.DEV_MNEMONIC, "http://parity.test.finance.sparkpool.com:18545"),
       network_id: 3,       // Ropsten's id
