@@ -317,7 +317,7 @@ contract GLXGame is GLXLifecycle{
         uint256 totalAmount = CompoundHelper.redeem(extToken,  finToken);
         uint256 initAmount = trueTotalAmount.add(falseTotalAmount);
 
-        require(totalAmount < initAmount, "GLXGame: FIN_INCOME_INVALID");
+        require(totalAmount >= initAmount, "GLXGame: FIN_INCOME_INVALID");
 
         interestIncome = totalAmount.sub(initAmount);
 
