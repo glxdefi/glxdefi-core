@@ -73,7 +73,7 @@ contract GLXRouter is Ownable {
         GLXHelper.safeTransfer(intToken, msg.sender, userMintAmount);
 
         address liquidPool = IGLXFactory(factory).getLiquidPool(intToken);
-        GLXHelper.safeTransfer(liquidPool, msg.sender, userMintAmount);
+        GLXHelper.safeTransfer(intToken, liquidPool, userMintAmount);
 
 
         return true;
