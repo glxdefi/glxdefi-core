@@ -23,7 +23,7 @@ contract GLXRouter is Ownable {
 
     modifier validGame(address game) {
         require(game != address(0), 'GLXRouter: GAME_INVALID');
-        require(IGLXFactory(factory).getGameExtToken(game) == address(0), 'GLXRouter: GAME_NOT_EXIST');
+        require(IGLXFactory(factory).getGameExtToken(game) != address(0), 'GLXRouter: GAME_NOT_EXIST');
         _;
     }
 

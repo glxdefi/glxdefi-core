@@ -6,6 +6,7 @@ const {
     expectRevert, // Assertions for transactions that should fail
 } = require('@openzeppelin/test-helpers');
 const { TestHelper } = require('@openzeppelin/cli');
+const { ZWeb3 } = require('@openzeppelin/upgrades');
 var MockErc20 = artifacts.require("MockErc20");
 var GLXToken = artifacts.require("GLXToken");
 var GLXFactory = artifacts.require("GLXFactory");
@@ -17,7 +18,7 @@ const { expect } = require('chai');
 
 contract('Game', function (accounts) {
 
-    const [sender, receiver] =  accounts;
+    const [sender, player1] =  accounts;
 
     beforeEach(async function() {
         //合约实例
@@ -46,7 +47,14 @@ contract('Game', function (accounts) {
 
         expect(await this.game.factory.call()).equal(this.gLXFactory.address)
     })
-    it('should startGame', async function() {
+    it('should run game', async function() {
+        // 准备dai
+        await this.dai.transfer(player1, ZWeb3.web3.utils.toWei('100','ether'))
+        const player1DaiBalance = await this.dai.balanceOf.call(player1)
+        expect(ZWeb3.web3.utils.fromWei(player1DaiBalance, 'ether')).equal('100')
+
+        //下注
+        await this.router.bet(this.game.address, false, ZWeb3.web3.utils.toWei('1','ether'))
     })
 
 })
