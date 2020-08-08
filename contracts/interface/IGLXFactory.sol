@@ -9,7 +9,7 @@ interface IGLXFactory {
 
     //创建游戏
     function createGame(
-        address router,
+        address router,//router地址
         address extToken,//外部押注代币，如DAI
         address intToken,//内部发行代币，如gDAI
         address finToken,//defi生息地址

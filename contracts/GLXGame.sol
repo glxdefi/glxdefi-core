@@ -9,15 +9,17 @@ import "./library/GLXHelper.sol";
 import "./library/CompoundHelper.sol";
 
 
-
+//game合约：游戏实例，可以同时创建不同代币参与，以及不同时间维度和不同对赌标的的游戏
 contract GLXGame is GLXLifecycle{
 
     using SafeMath for uint256;
 
     //股东抽成抽成比例，默认3%个点
-    uint public constant SHARE_HOLDER_RAKE_RATE = 3;
+    uint256 public constant SHARE_HOLDER_RAKE_RATE = 3;
 
+    //factory 地址
     address public factory;
+    //router 地址
     address public router;
 
     //押注的token
@@ -90,16 +92,16 @@ contract GLXGame is GLXLifecycle{
 
     // 当被factory创建后就会调用一次init
     function initialize(
-        address _router,
-        address _extToken,
-        address _intToken,
-        address _finToken,
+        address _router,//router地址
+        address _extToken,//外部押注代币，如DAI
+        address _intToken,//内部发行代币，如gDAI
+        address _finToken,//defi生息地址
 
-        uint _startBlockNumber,
-        uint _endBlockNumber,
-        bool _isOnChainGame,
-        address _gameObjectToken,
-        uint256 _gameObjectTokenSupply
+        uint _startBlockNumber,//游戏开始高度
+        uint _endBlockNumber,//游戏开奖高度
+        bool _isOnChainGame,//是否是以链上数据来做对赌标的游戏
+        address _gameObjectToken,//当是链上标的地址
+        uint256 _gameObjectTokenSupply//标的数据指标值
     )  external onlyFactory {
 
         router = _router;
@@ -246,13 +248,26 @@ contract GLXGame is GLXLifecycle{
 
         //计算
         if (gameResult) {
-            require(trueAmountMap[_account] != 0, "GLXGame: NOT_EXIST");
+            //正方赢
+            if (trueAmountMap[_account] > 0) {
+                //押中正方
+                receiveAmount = GLXHelper.calReceiveAmount(trueAmountMap[_account], trueTotalAmount, winPrincipalProfit);
 
-            receiveAmount = GLXHelper.calReceiveAmount(trueAmountMap[_account], trueTotalAmount, winPrincipalProfit);
+            } else if ((trueTotalAmount == 0) && (falseAmountMap[_account] > 0)) {
+                //正方赢，但是没人押正方，需要退还反方的97%本金
+                receiveAmount = GLXHelper.calReceiveAmount(falseAmountMap[_account], falseTotalAmount, winPrincipalProfit);
+            }
+
         } else {
-            require(falseAmountMap[_account] != 0, "GLXGame: NOT_EXIST");
+            //反方赢
+            if (falseAmountMap[_account] > 0) {
+                //押中反方
+                receiveAmount = GLXHelper.calReceiveAmount(falseAmountMap[_account], falseTotalAmount, winPrincipalProfit);
 
-            receiveAmount = GLXHelper.calReceiveAmount(falseAmountMap[_account], falseTotalAmount, winPrincipalProfit);
+            } else if ((falseTotalAmount == 0) && (trueAmountMap[_account] > 0)) {
+                //反方赢，但是没人押反方，需要退还正方的97%本金
+                receiveAmount = GLXHelper.calReceiveAmount(trueAmountMap[_account], trueTotalAmount, winPrincipalProfit);
+            }
         }
 
         if (_account == maxAmountAccount) {
@@ -280,7 +295,10 @@ contract GLXGame is GLXLifecycle{
             shareHolderProfit = trueTotalAmount.mul(SHARE_HOLDER_RAKE_RATE).div(uint256(100));
             winPrincipalProfit = trueTotalAmount.sub(shareHolderProfit);
         }
-        GLXHelper.safeTransfer(extToken, intToken, shareHolderProfit);
+
+        if (winPrincipalProfit > 0) {
+            GLXHelper.safeTransfer(extToken, intToken, shareHolderProfit);
+        }
     }
 
     //清算各方收益:包括赢家，持有平台币的股东，以及本局最大投注人收益

@@ -8,6 +8,7 @@ import "./interface/IGLXGame.sol";
 
 import "./library/GLXHelper.sol";
 
+//router合约：主要功能是作为游戏的入口
 contract GLXRouter is Ownable {
 
     using SafeMath for uint256;
@@ -16,6 +17,7 @@ contract GLXRouter is Ownable {
     //代币铸币的时候其中多少比例放到流动性挖矿池子中提供利息，默认30%个点，其余70%直接发给平台股东
     uint256 public constant LIQUID_MINT_RATE = 70;
 
+    //factory地址
     address public factory;
 
 
