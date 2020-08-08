@@ -66,7 +66,7 @@ contract GLXRouter is Ownable {
         uint256 curUserCount = IGLXGame(game).getCurUserCount();
 
         uint256 discount = IGLXFactory(factory).getMintDiscount(intToken);
-        //同样的押注资金：在同一个epoch中，越早押注铸币越多。在不同epoch中，同一个押注次序，早期的epoch会收获更多的代币
+        //同样的押注资金：在同一个epoch中，越早押注铸币越多。在不同epoch中，同一个押注次序，早期的epoch会收获更多的代币,公式：100 * amount / ( (turnNumber / 10)  + 1)  / discount
         uint256 totalMintAmount = amount.div( (uint256(1).add(curUserCount.div(uint256(10))) )).mul(uint256(100)).div(discount);
 
         uint256 liquidMintAmount = totalMintAmount.mul(LIQUID_MINT_RATE).div(uint256(100));
