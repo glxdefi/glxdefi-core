@@ -216,11 +216,11 @@ contract GLXGame is GLXLifecycle{
         require(_account != address(0), "GLXGame: RECEIVE_ADDRESS_ZERO");
         require(!isReceivedMap[_account], "GLXGame: RECEIVED");
 
-        require(trueTotalAmount != 0, "GLXGame: TRUE_TOTAL_AMOUNT_ZERO");
-        require(falseTotalAmount != 0, "GLXGame: FALSE_TOTAL_AMOUNT_ZERO");
-
         //押注链下数据 需要oracle结果
         require(isGameResultOpen, "GLXGame: 还没有开奖");
+
+        require(trueTotalAmount != 0 || falseTotalAmount != 0, "GLXGame: NOBODY_BET");
+
 
         uint256 receiveAmount = 0;
 
