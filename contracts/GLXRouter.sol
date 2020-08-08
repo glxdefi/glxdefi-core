@@ -61,7 +61,7 @@ contract GLXRouter is Ownable {
 
     //押注的同时将会铸币，会将这部分 平台代币分 70% 给用户,30%转到流动性挖矿pool里做利息
     function _mint(address game, address intToken, uint256 amount) internal returns (bool) {
-        //获取当前是参与序列好
+        //获取当前已经有多少人参与游戏
         uint256 curUserCount = IGLXGame(game).getCurUserCount();
 
         uint256 discount = IGLXFactory(factory).getMintDiscount(intToken);
@@ -92,6 +92,7 @@ contract GLXRouter is Ownable {
 
     //当对赌的标的 是链上数据，需要触发开奖
     function updateGameResult(address game) external validGame(game) returns (bool) {
+
         require(IGLXGame(game).updateGameResult(), 'GLXRouter: GAME_UPDATE_RESULT_FAILED');
 
         return true;
