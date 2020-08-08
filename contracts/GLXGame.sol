@@ -182,20 +182,29 @@ contract GLXGame is GLXLifecycle{
 
 
     //查看自己是否拥有需要提取的收益
-    function isExistIncomeNeedReceive() external view returns (bool) {
+    function isExistIncomeNeedReceive(address account) external view returns (bool) {
         if (!isCanReceive()) {
             return false;
         }
 
-        if ((trueAmountMap[msg.sender] > 0) && gameResult) {
+        if ((trueAmountMap[account] > 0) && gameResult) {
                 return true;
         }
 
-        if ((falseAmountMap[msg.sender] > 0) && !gameResult) {
+        if ((falseAmountMap[account] > 0) && !gameResult) {
             return true;
         }
 
-        if (msg.sender == maxAmountAccount) {
+        if ((trueAmountMap[account] > 0) && !gameResult && (falseTotalAmount == 0)) {
+            return true;
+        }
+
+        if ((falseAmountMap[account] > 0) && gameResult && (trueTotalAmount == 0)) {
+            return true;
+        }
+
+
+        if (account == maxAmountAccount) {
             return true;
         }
 
