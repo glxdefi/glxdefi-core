@@ -1,5 +1,7 @@
 # glxdefi-core
 Core smart contracts of glxdefi
+## 合约架构
+![avatar](docs/struct.png)
 ##合约部署顺序
 1、GLXFactory
 2、GLXRouter(需要factory地址)
